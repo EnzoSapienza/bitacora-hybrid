@@ -22,6 +22,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f38eb2d1-051a-4773-b386-396249a26f66"
+      }
+    },
+    "owner": "daisytorricos-team"
   }
 }
