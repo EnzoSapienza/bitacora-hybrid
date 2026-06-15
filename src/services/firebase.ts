@@ -1,5 +1,5 @@
 /**
- * El único archivo que se comunica con Firebase
+ * Inicializar Firebase y exponer la aplicación
  */
 
 import { initializeApp } from "firebase/app";
