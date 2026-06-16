@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
     subtitle: { fontSize: 16, color: "#666" },
 });
 
-
 export default function HomeScreen() {
     const travels: Travel[] = [
         {
@@ -16,7 +15,7 @@ export default function HomeScreen() {
             description: "Un viaje increíble a la playa con amigos.",
             ownerId: "user123",
             name: "Viaje a la playa",
-            imageUrl: "",
+            imageUrl: "https://placehold.net/default.png",
             startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
             endDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
             pointsCount: 100,
@@ -30,7 +29,7 @@ export default function HomeScreen() {
             description: "Otro viaje emocionante a la montaña.",
             ownerId: "user456",
             name: "Viaje a la montaña",
-            imageUrl: "",
+            imageUrl: "https://placehold.net/default.png",
             startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
             endDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
             pointsCount: 150,
@@ -44,7 +43,7 @@ export default function HomeScreen() {
             description: "Un viaje increíble a la selva.",
             ownerId: "user789",
             name: "Viaje a la selva",
-            imageUrl: "",
+            imageUrl: "https://placehold.net/default.png",
             startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
             endDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
             pointsCount: 200,
@@ -52,18 +51,15 @@ export default function HomeScreen() {
             durationDays: 14,
             privileges: null,
             visibility: "PUBLIC",
-        }
-    ]
+        },
+    ];
 
     return (
         <FlatList
             data={travels}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-                <TravelCard
-                    travel={item}
-                    onPress={() => { }}
-                />
+                <TravelCard travel={item} onPress={() => {}} />
             )}
             contentContainerStyle={{
                 padding: 16,
