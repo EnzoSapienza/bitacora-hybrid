@@ -3,8 +3,8 @@
  */
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MapNavigator from "./features/MapNavigator";
-import TravelNavigator from "./features/TravelNavigator";
+import MapNavigator from "./tabs/MapNavigator";
+import TravelNavigator from "./tabs/TravelNavigator";
 import HomeScreen from "@/screens/app/HomeScreen";
 
 export type AppTabParamList = {
