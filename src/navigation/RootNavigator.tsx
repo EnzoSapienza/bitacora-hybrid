@@ -1,4 +1,8 @@
-import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
+import {
+    NavigationContainer,
+    DefaultTheme,
+    DarkTheme,
+} from "@react-navigation/native";
 import { useAuthStore } from "../store/authStore";
 import { useTheme } from "../context/ThemeContext";
 import AppNavigator from "./AppNavigator";
@@ -9,7 +13,9 @@ export default function RootNavigator() {
     const { theme } = useTheme();
 
     return (
-        <NavigationContainer theme={theme === 'dark' ? DarkTheme : DefaultTheme}>
+        <NavigationContainer
+            theme={theme === "dark" ? DarkTheme : DefaultTheme}
+        >
             {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
         </NavigationContainer>
     );

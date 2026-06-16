@@ -4,6 +4,8 @@ import { authService } from "./src/services/authService";
 import { useAuthStore } from "./src/store/authStore";
 import RootNavigator from "./src/navigation/RootNavigator";
 import { ThemeProvider } from "./src/context/ThemeContext";
+import { PaperProvider } from "react-native-paper";
+import { ConfirmProvider } from "@/context/confirm/ConfirmProvider";
 
 export default function App() {
     const [loading, setLoading] = useState(true);
@@ -27,8 +29,12 @@ export default function App() {
 
     return (
         <SafeAreaProvider>
-            <ThemeProvider> 
-                <RootNavigator />
+            <ThemeProvider>
+                <PaperProvider>
+                    <ConfirmProvider>
+                        <RootNavigator />
+                    </ConfirmProvider>
+                </PaperProvider>
             </ThemeProvider>
         </SafeAreaProvider>
     );
