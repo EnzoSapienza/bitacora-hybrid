@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.bitacorahybrid"
@@ -29,7 +29,13 @@
       }
     },
     "owner": "daisytorricos-team",
-    "plugins": ["expo-web-browser"],
+    "plugins": [
+      "expo-web-browser",
+      "expo-camera",
+      "expo-image-picker",
+      "@react-native-community/datetimepicker",
+      "expo-image"
+    ],
     "scheme": "bitacorahybrid"
   }
 }

@@ -116,7 +116,11 @@ const TravelCard = ({ travel, onPress }: TravelCardProps) => {
 
     return (
         <Pressable style={styles.card} onPress={onPress}>
-            <Image source={{ uri: travel.imageUrl || "" }} style={styles.image} />
+            {travel.imageUrl ? (
+                <Image source={{ uri: travel.imageUrl }} style={styles.image} />
+            ) : (
+                <View style={[styles.image, { backgroundColor: '#e5e7eb' }]} />
+            )}
 
             <View style={styles.content}>
                 <View>

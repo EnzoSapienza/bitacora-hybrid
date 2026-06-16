@@ -1,0 +1,38 @@
+import { Colors } from "./colors";
+
+export const Themes = {
+    light: {
+        azulOscuro: Colors.azulOscuro,
+        azulProfundo: Colors.azulProfundo,
+        azulMedio: Colors.azulMedio,
+        azulClaro: Colors.azulClaro,
+        naranja: Colors.naranja,
+        grisFondoApp: Colors.grisFondoApp,
+        blanco: Colors.blanco,
+        grisOscuro: Colors.grisOscuro,
+        grisClaro: Colors.grisClaro,
+        grisMedio: Colors.grisMedio,
+        grisOscuroAzulado: Colors.grisOscuroAzulado,
+        negroAzulado: Colors.negroAzulado,
+        verdeMentaFondo: Colors.verdeMentaFondo,
+        verdeMentaTexto: Colors.verdeMentaTexto,
+        rojoPin: Colors.rojoPin,
+    },
+    dark: {
+        azulOscuro: Colors.azulClaro,
+        azulProfundo: Colors.azulMedio,
+        azulMedio: Colors.azulProfundo,
+        azulClaro: Colors.azulOscuro,
+        naranja: Colors.naranja,
+        grisFondoApp: Colors.negroAzulado,
+        blanco: Colors.grisOscuroAzulado,
+        grisOscuro: Colors.grisClaro,
+        grisClaro: Colors.grisOscuro,
+        grisMedio: Colors.grisMedio,
+        grisOscuroAzulado: Colors.blanco,
+        negroAzulado: Colors.grisFondoApp,
+        verdeMentaFondo: "#1B3B22",
+        verdeMentaTexto: "#81C784",
+        rojoPin: Colors.rojoPin,
+    },
+};

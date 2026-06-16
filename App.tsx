@@ -3,6 +3,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { authService } from "./src/services/authService";
 import { useAuthStore } from "./src/store/authStore";
 import RootNavigator from "./src/navigation/RootNavigator";
+import { ThemeProvider } from "./src/context/ThemeContext";
 
 export default function App() {
     const [loading, setLoading] = useState(true);
@@ -19,14 +20,16 @@ export default function App() {
             setLoading(false);
         });
 
-        return unsubscribe; // cleanup al desmontar
+        return unsubscribe;
     }, []);
 
-    if (loading) return null; // TODO: Splashscreen
+    if (loading) return null;
 
     return (
         <SafeAreaProvider>
-            <RootNavigator />
+            <ThemeProvider> 
+                <RootNavigator />
+            </ThemeProvider>
         </SafeAreaProvider>
     );
 }
