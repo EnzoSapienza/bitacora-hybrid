@@ -157,7 +157,7 @@ export function TravelFormContent({
                 {description.length} / 300
             </Text>
 
-            //FECHAS REUTILIZABLES CON CALENDARIO 
+            {/* FECHAS REUTILIZABLES CON CALENDARIO */}
             <View style={[styles.row, { marginTop: 8 }]}>
                 <DatePickerField
                     label="Fecha Inicio"
