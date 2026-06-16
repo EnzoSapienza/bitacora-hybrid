@@ -1,18 +1,20 @@
-import TopBarMenu from "@/components/top_bar/TopBarMenu";
-import HomeScreen from "@/screens/app/HomeScreen";
+import TopBarMenu from "@/components/top_bar_menu/TopBarMenu";
+import HomeScreen from "@/screens/home/HomeScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 export type HomeStackParamlist = {
-    Home: undefined;
+    Mine: undefined;
+    Shared: undefined;
 };
 
+// TODO: Instalar @react-navigation/material-top-tabs con npx expo install
 const Stack = createNativeStackNavigator<HomeStackParamlist>();
 
 export default function HomeNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Home"
+                name="Mine"
                 component={HomeScreen}
                 options={{
                     title: "Inicio",
@@ -20,6 +22,9 @@ export default function HomeNavigator() {
                     headerRight: () => <TopBarMenu />,
                 }}
             ></Stack.Screen>
+            {
+                // TODO: La pantalla de viajes compartidos
+            }
         </Stack.Navigator>
     );
 }

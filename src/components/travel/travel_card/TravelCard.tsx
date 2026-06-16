@@ -2,7 +2,7 @@ import Travel from "@/types/models/travel";
 import { Pressable, Image, StyleSheet, View, Text } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { getTimeSinceText } from "../utils/date";
+import { getTimeSinceText } from "@/components/utils/date";
 
 const styles = StyleSheet.create({
     card: {
@@ -119,7 +119,7 @@ const TravelCard = ({ travel, onPress }: TravelCardProps) => {
             {travel.imageUrl ? (
                 <Image source={{ uri: travel.imageUrl }} style={styles.image} />
             ) : (
-                <View style={[styles.image, { backgroundColor: '#e5e7eb' }]} />
+                <View style={[styles.image, { backgroundColor: "#e5e7eb" }]} />
             )}
 
             <View style={styles.content}>
@@ -138,7 +138,8 @@ const TravelCard = ({ travel, onPress }: TravelCardProps) => {
                             {travel.pointsCount} PUNTOS
                         </Text>
 
-                        {!travel.updatedAt || " • ACT. " + getTimeSinceText(travel.updatedAt)}
+                        {!travel.updatedAt ||
+                            " • ACT. " + getTimeSinceText(travel.updatedAt)}
                     </Text>
                 </View>
             </View>

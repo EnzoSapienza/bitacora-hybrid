@@ -1,6 +1,6 @@
-import TravelCard from "@/components/travel_card/TravelCard";
+import TravelList from "@/components/travel/travel_list/TravelList";
 import Travel from "@/types/models/travel";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { StyleSheet, FlatList } from "react-native";
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, backgroundColor: "#fff" },
@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
 });
 
 export default function HomeScreen() {
+    // TODO: Llamar a un hook en vez de esto (mover los placehodlers si hace falta)
     const travels: Travel[] = [
         {
             id: "1",
@@ -55,15 +56,9 @@ export default function HomeScreen() {
     ];
 
     return (
-        <FlatList
-            data={travels}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-                <TravelCard travel={item} onPress={() => {}} />
-            )}
-            contentContainerStyle={{
-                padding: 16,
-            }}
+        <TravelList
+            travels={travels}
+            onPressItem={(item) => console.log("Viajar a: " + item.id)}
         />
     );
 }

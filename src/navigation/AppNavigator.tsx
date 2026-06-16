@@ -1,40 +1,31 @@
 /**
- * Navegador genérico de la app tras autenticarse
+ * Stack de uso genérico
  */
 
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MapNavigator from "./tabs/MapNavigator";
-import ExploreNavigator from "./tabs/ExploreNavigator";
-import HomeScreen from "@/screens/app/HomeScreen";
-import TopBarMenu from "@/components/top_bar/TopBarMenu";
-import HomeNavigator from "./tabs/HomeNavigator";
+import TravelNavigator from "./tabs/TravelNavigator";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AppTabs from "./AppTabs";
 
 export type AppTabParamList = {
-    Home: undefined;
-    Explore: undefined;
-    Map: undefined;
+    Tabs: undefined;
+    Travel: { travelId: string };
 };
 
-const Tab = createBottomTabNavigator<AppTabParamList>();
+const Stack = createNativeStackNavigator<AppTabParamList>();
 
 export default function AppNavigator() {
     return (
-        <Tab.Navigator>
-            <Tab.Screen
-                name="Home"
-                component={HomeNavigator}
+        <Stack.Navigator>
+            <Stack.Screen
+                name="Tabs"
+                component={AppTabs}
                 options={{ headerShown: false }}
             />
-            <Tab.Screen
-                name="Explore"
-                component={ExploreNavigator}
+            <Stack.Screen
+                name="Travel"
+                component={TravelNavigator}
                 options={{ headerShown: false }}
             />
-            <Tab.Screen
-                name="Map"
-                component={MapNavigator}
-                options={{ headerShown: false }}
-            />
-        </Tab.Navigator>
+        </Stack.Navigator>
     );
 }
