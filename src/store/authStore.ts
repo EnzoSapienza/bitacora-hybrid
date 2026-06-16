@@ -21,7 +21,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
-  isLoading: true, // true hasta que Firebase responda por primera vez
+  isLoading: true,
 
   setUser: (user) => set({ user, isAuthenticated: true, isLoading: false }),
   clearUser: () => set({ user: null, isAuthenticated: false, isLoading: false }),

@@ -42,3 +42,4 @@ yarn-error.*
 
 .vscode/
 google-services.json
+GoogleService-Info.plist

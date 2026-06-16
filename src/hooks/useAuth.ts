@@ -10,18 +10,16 @@ import { authService } from '../services/authService';
 
 WebBrowser.maybeCompleteAuthSession();
 
-// Obtenés estos IDs en la consola de Firebase →
-// Configuración del proyecto → Tu app → OAuth 2.0
-const ANDROID_CLIENT_ID = 'TU_ANDROID_CLIENT_ID.apps.googleusercontent.com';
-const IOS_CLIENT_ID = 'TU_IOS_CLIENT_ID.apps.googleusercontent.com';
-const WEB_CLIENT_ID = 'TU_WEB_CLIENT_ID.apps.googleusercontent.com';
+const ANDROID_CLIENT_ID = '1901113908-6t60jns807ic20vtrv0q0m1tk19uq8r6.apps.googleusercontent.com';
+const IOS_CLIENT_ID = '1901113908-er8u2hej1skg3btt3mkb29avg7tehdei.apps.googleusercontent.com';
+const WEB_CLIENT_ID = '1901113908-r6sliik0sosrd0a7p9n7v1o11bih36pm.apps.googleusercontent.com';
 
 export function useAuth() {
     const { user, isAuthenticated, setUser, clearUser } = useAuthStore();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const [, response, promptAsync] = Google.useAuthRequest({
+    const [request, response, promptAsync] = Google.useAuthRequest({
         androidClientId: ANDROID_CLIENT_ID,
         iosClientId: IOS_CLIENT_ID,
         webClientId: WEB_CLIENT_ID,
@@ -71,9 +69,8 @@ function mapFirebaseError(code: string): string {
         case 'auth/invalid-credential':
         case 'auth/user-not-found':
         case 'auth/wrong-password':
-            return 'Email o contraseña incorrectos.';
         case 'auth/invalid-email':
-            return 'El email no es válido.';
+            return 'Email o contraseña incorrectos.';
         case 'auth/too-many-requests':
             return 'Demasiados intentos. Intentá más tarde.';
         default:
