@@ -3,16 +3,16 @@ import TravelDetailScreen from "@/screens/travel/TravelDetail/TravelDetailScreen
 import TravelListScreen from "@/screens/travel/TravelList/TravelListScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-export type TravelStackParamList = {
+export type ExploreStackParamList = {
     TravelList: undefined;
     TravelDetails: { travelId: string };
     TravelForm: undefined;
-    // TODO: el form recibe, opcionalmente, un viaje parcial, si edita en vez de crear
+    // TODO: Puntos de interés
 };
 
-const Stack = createNativeStackNavigator<TravelStackParamList>();
+const Stack = createNativeStackNavigator<ExploreStackParamList>();
 
-export default function TravelNavigator() {
+export default function ExploreNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="TravelList" component={TravelListScreen} />

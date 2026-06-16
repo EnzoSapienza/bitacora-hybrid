@@ -1,41 +1,41 @@
 {
-  "expo": {
-    "name": "bitacora-hybrid",
-    "slug": "bitacora-hybrid",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.bitacorahybrid"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.bitacorahybrid"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "f38eb2d1-051a-4773-b386-396249a26f66"
-      }
-    },
-    "owner": "daisytorricos-team",
-    "plugins": [
-      "expo-web-browser",
-      "expo-camera",
-      "expo-image-picker",
-      "@react-native-community/datetimepicker",
-      "expo-image"
-    ],
-    "scheme": "bitacorahybrid"
-  }
+    "expo": {
+        "name": "bitacora-hybrid",
+        "slug": "bitacora-hybrid",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "automatic",
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.catedra.bitacora"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "backgroundColor": "#E6F4FE",
+                "foregroundImage": "./assets/android-icon-foreground.png",
+                "backgroundImage": "./assets/android-icon-background.png",
+                "monochromeImage": "./assets/android-icon-monochrome.png"
+            },
+            "predictiveBackGestureEnabled": false,
+            "package": "com.catedra.bitacora"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "extra": {
+            "eas": {
+                "projectId": "f38eb2d1-051a-4773-b386-396249a26f66"
+            }
+        },
+        "owner": "daisytorricos-team",
+        "plugins": [
+            "expo-web-browser",
+            "expo-camera",
+            "expo-image-picker",
+            "@react-native-community/datetimepicker",
+            "expo-image"
+        ],
+        "scheme": "bitacorahybrid"
+    }
 }
