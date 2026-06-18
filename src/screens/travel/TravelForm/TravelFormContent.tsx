@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { Camera } from 'expo-camera';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image'; // El motor tipo Coil para renderizado premium
+import { Image } from 'expo-image';
 import { Typography } from '../../../constants/typography';
 import { DatePickerField } from '../../../components/utils/DatePickerField';
 import { Dispatch, SetStateAction } from 'react';
@@ -22,9 +20,15 @@ interface TravelFormContentProps {
     visibility: 'PRIVATE' | 'PUBLIC' | 'FOLLOWERS';
     setVisibility: Dispatch<SetStateAction<'PRIVATE' | 'PUBLIC' | 'FOLLOWERS'>>;
     imageUrl: string | null;
-    setImageUrl: Dispatch<SetStateAction<string | null>>;
+    handlePickImages: () => void;
     dateError: string | null;
 }
+
+const VISIBILITY_OPTIONS = [
+    { value: 'PRIVATE', label: 'Privado', icon: 'lock' },
+    { value: 'FOLLOWERS', label: 'Amigos', icon: 'people' },
+    { value: 'PUBLIC', label: 'Público', icon: 'public' },
+] as const;
 
 export function TravelFormContent({
     currentColors,
@@ -39,86 +43,25 @@ export function TravelFormContent({
     visibility,
     setVisibility,
     imageUrl,
-    setImageUrl,
+    handlePickImages,
     dateError,
 }: TravelFormContentProps) {
-
-    const seleccionarDeGaleria = async () => {
-        const statusPermiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!statusPermiso.granted) {
-            Alert.alert('Permiso requerido', 'Se necesita acceso a la galería.');
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [16, 9],
-            quality: 0.6,
-        });
-
-        if (!result.canceled && result.assets[0]?.uri) {
-            setImageUrl(result.assets[0].uri);
-        }
-    };
-
-    const tomarFoto = async () => {
-        const statusPermiso = await Camera.requestCameraPermissionsAsync();
-        if (!statusPermiso.granted) {
-            Alert.alert('Permiso requerido', 'Se necesita acceso a la cámara.');
-            return;
-        }
-
-        const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [16, 9],
-            quality: 0.6,
-        });
-
-        if (!result.canceled && result.assets[0]?.uri) {
-            setImageUrl(result.assets[0].uri);
-        }
-    };
-
-    const handleAgregarPortada = () => {
-        Alert.alert(
-            'Seleccionar Foto de Portada',
-            '¿Desde dónde querés cargar la imagen de tu viaje?',
-            [
-                { text: 'Galería de fotos', onPress: seleccionarDeGaleria },
-                { text: 'Tomar fotografía', onPress: tomarFoto },
-                { text: 'Cancelar', style: 'cancel' },
-            ]
-        );
-    };
-
     return (
-        <View style={styles.container}> 
+        <View style={styles.container}>
             {imageUrl ? (
                 <View style={styles.imageContainer}>
-                    <Image
-                        source={imageUrl}
-                        style={styles.previewImage}
-                        transition={200}  
-                    />
+                    <Image source={imageUrl} style={styles.previewImage} transition={200} />
                     <TouchableOpacity
                         style={[styles.removeButton, { backgroundColor: currentColors.rojoPin }]}
-                        onPress={() => setImageUrl(null)}
+                        onPress={handlePickImages}
                     >
-                        <Text style={[Typography.labelLarge, { color: '#FFFFFF' }]}>Eliminar Foto</Text>
+                        <Text style={[Typography.labelLarge, { color: '#FFFFFF' }]}>Cambiar Foto</Text>
                     </TouchableOpacity>
                 </View>
             ) : (
                 <TouchableOpacity
-                    style={[
-                        styles.uploadContainer,
-                        {
-                            backgroundColor: currentColors.blanco,
-                            borderColor: '#8E8E93'
-                        }
-                    ]}
-                    onPress={handleAgregarPortada}
+                    style={[styles.uploadContainer, { backgroundColor: currentColors.blanco, borderColor: currentColors.grisClaro }]}
+                    onPress={handlePickImages}
                     activeOpacity={0.7}
                 >
                     <MaterialIcons name="photo-camera" size={38} color={currentColors.grisMedio} style={{ marginBottom: 8 }} />
@@ -127,7 +70,7 @@ export function TravelFormContent({
                     </Text>
                 </TouchableOpacity>
             )}
-            
+
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 24 }]}>
                 Nombre del Viaje
             </Text>
@@ -139,7 +82,7 @@ export function TravelFormContent({
                 value={name}
                 onChangeText={setName}
             />
-            
+
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 16 }]}>
                 Descripción
             </Text>
@@ -157,7 +100,6 @@ export function TravelFormContent({
                 {description.length} / 300
             </Text>
 
-            {/* FECHAS REUTILIZABLES CON CALENDARIO */}
             <View style={[styles.row, { marginTop: 8 }]}>
                 <DatePickerField
                     label="Fecha Inicio"
@@ -179,66 +121,39 @@ export function TravelFormContent({
                     {dateError}
                 </Text>
             )}
-            
+
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 16 }]}>
                 Visibilidad del Viaje
             </Text>
             <View style={styles.row}>
-                <TouchableOpacity
-                    style={[
-                        styles.selectorButton,
-                        {
-                            backgroundColor: visibility === 'PRIVATE' ? currentColors.azulProfundo : currentColors.blanco,
-                            borderColor: visibility === 'PRIVATE' ? currentColors.azulProfundo : currentColors.grisClaro
-                        }
-                    ]}
-                    onPress={() => setVisibility('PRIVATE')}
-                >
-                    <View style={styles.buttonInnerRow}>
-                        <MaterialIcons name="lock" size={16} color={visibility === 'PRIVATE' ? currentColors.blanco : currentColors.azulProfundo} />
-                        <Text style={[Typography.labelSmall, { color: visibility === 'PRIVATE' ? currentColors.blanco : currentColors.azulProfundo, marginLeft: 6 }]}>
-                            Privado
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[
-                        styles.selectorButton,
-                        {
-                            backgroundColor: visibility === 'FOLLOWERS' ? currentColors.azulProfundo : currentColors.blanco,
-                            borderColor: visibility === 'FOLLOWERS' ? currentColors.azulProfundo : currentColors.grisClaro,
-                            marginLeft: 8
-                        }
-                    ]}
-                    onPress={() => setVisibility('FOLLOWERS')}
-                >
-                    <View style={styles.buttonInnerRow}>
-                        <MaterialIcons name="people" size={16} color={visibility === 'FOLLOWERS' ? currentColors.blanco : currentColors.azulProfundo} />
-                        <Text style={[Typography.labelSmall, { color: visibility === 'FOLLOWERS' ? currentColors.blanco : currentColors.azulProfundo, marginLeft: 6 }]}>
-                            Amigos
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[
-                        styles.selectorButton,
-                        {
-                            backgroundColor: visibility === 'PUBLIC' ? currentColors.azulProfundo : currentColors.blanco,
-                            borderColor: visibility === 'PUBLIC' ? currentColors.azulProfundo : currentColors.grisClaro,
-                            marginLeft: 8
-                        }
-                    ]}
-                    onPress={() => setVisibility('PUBLIC')}
-                >
-                    <View style={styles.buttonInnerRow}>
-                        <MaterialIcons name="public" size={16} color={visibility === 'PUBLIC' ? currentColors.blanco : currentColors.azulProfundo} />
-                        <Text style={[Typography.labelSmall, { color: visibility === 'PUBLIC' ? currentColors.blanco : currentColors.azulProfundo, marginLeft: 6 }]}>
-                            Público
-                        </Text>
-                    </View>
-                </TouchableOpacity>
+                {VISIBILITY_OPTIONS.map((option, index) => {
+                    const isSelected = visibility === option.value;
+                    return (
+                        <TouchableOpacity
+                            key={option.value}
+                            style={[
+                                styles.selectorButton,
+                                {
+                                    backgroundColor: isSelected ? currentColors.azulProfundo : currentColors.blanco,
+                                    borderColor: isSelected ? currentColors.azulProfundo : currentColors.grisClaro,
+                                    marginLeft: index > 0 ? 8 : 0,
+                                }
+                            ]}
+                            onPress={() => setVisibility(option.value)}
+                        >
+                            <View style={styles.buttonInnerRow}>
+                                <MaterialIcons
+                                    name={option.icon as any}
+                                    size={16}
+                                    color={isSelected ? currentColors.blanco : currentColors.azulProfundo}
+                                />
+                                <Text style={[Typography.labelSmall, { color: isSelected ? currentColors.blanco : currentColors.azulProfundo, marginLeft: 6 }]}>
+                                    {option.label}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
             </View>
         </View>
     );

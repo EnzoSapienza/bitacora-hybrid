@@ -1,18 +1,15 @@
-import React, { useState } from 'react';
-import {
-    ScrollView,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    ActivityIndicator,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { parse, isValid, startOfDay, endOfDay } from 'date-fns';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useTravelStore } from '../../../hooks/firestore/useTravelStore';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../context/ThemeContext';
 import { useCloudinaryUpload } from '../../../hooks/useCloudinaryUpload';
+import { useImagePicker } from '../../../hooks/useImagePicker';
 import { Typography } from '../../../constants/typography';
+import { calcDurationDays } from '@/components/utils/date';
 import { TravelFormContent } from './TravelFormContent';
 
 export default function TravelFormScreen() {
@@ -21,13 +18,13 @@ export default function TravelFormScreen() {
     const { user } = useAuth();
     const { addTravel, loading: storeLoading, error } = useTravelStore();
     const { uploadImage, uploading } = useCloudinaryUpload();
+    const { singleImage, handlePickImages } = useImagePicker(false);
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [startDateStr, setStartDateStr] = useState('');
     const [endDateStr, setEndDateStr] = useState('');
     const [visibility, setVisibility] = useState<'PRIVATE' | 'PUBLIC' | 'FOLLOWERS'>('PRIVATE');
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     const baseStartDate = startDateStr ? parse(startDateStr, 'dd/MM/yyyy', new Date()) : null;
     const baseEndDate = endDateStr ? parse(endDateStr, 'dd/MM/yyyy', new Date()) : null;
@@ -49,6 +46,8 @@ export default function TravelFormScreen() {
         !dateError &&
         user?.uid;
 
+    const estaCargando = storeLoading || uploading;
+
     const handleSave = async () => {
         if (!isFormValid || !baseStartDate || !baseEndDate) return;
 
@@ -58,8 +57,8 @@ export default function TravelFormScreen() {
         try {
             let remoteUrl = null;
 
-            if (imageUrl) {
-                remoteUrl = await uploadImage(imageUrl);
+            if (singleImage) {
+                remoteUrl = await uploadImage(singleImage);
                 if (!remoteUrl) {
                     alert('No se pudo subir la imagen de portada. Por favor intentá de nuevo.');
                     return;
@@ -74,19 +73,35 @@ export default function TravelFormScreen() {
                 endDate: finalEndDate,
                 visibility: visibility.toLowerCase(),
                 pointsCount: 0,
-                durationDays: Math.ceil((finalEndDate.getTime() - finalStartDate.getTime()) / (1000 * 60 * 60 * 24)) || 1,
+                durationDays: calcDurationDays(finalStartDate, finalEndDate),
                 imageUrl: remoteUrl,
                 privileges: [],
                 updatedAt: new Date(),
             });
 
             navigation.goBack();
-        } catch (err) {
+        } catch {
             // error manejado por el store
         }
     };
 
-    const estaCargando = storeLoading || uploading;
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity
+                    onPress={handleSave}
+                    disabled={!isFormValid || estaCargando}
+                    style={{ marginRight: 8, opacity: isFormValid && !estaCargando ? 1 : 0.4 }}
+                >
+                    {estaCargando ? (
+                        <ActivityIndicator size="small" color={colors.azulProfundo} />
+                    ) : (
+                        <MaterialIcons name="check" size={26} color={colors.azulProfundo} />
+                    )}
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation, isFormValid, estaCargando, name, description, startDateStr, endDateStr, visibility, singleImage]);
 
     return (
         <ScrollView
@@ -106,8 +121,8 @@ export default function TravelFormScreen() {
                 setEndDateStr={setEndDateStr}
                 visibility={visibility}
                 setVisibility={setVisibility}
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
+                imageUrl={singleImage}
+                handlePickImages={handlePickImages}
                 dateError={dateError}
             />
 
@@ -116,24 +131,11 @@ export default function TravelFormScreen() {
                     {error}
                 </Text>
             )}
-
-            <TouchableOpacity
-                style={[styles.saveButton, { backgroundColor: isFormValid && !estaCargando ? colors.azulProfundo : colors.grisMedio }]}
-                onPress={handleSave}
-                disabled={!isFormValid || estaCargando}
-            >
-                {estaCargando ? (
-                    <ActivityIndicator color="#fff" />
-                ) : (
-                    <Text style={[Typography.labelLarge, { color: colors.blanco }]}>Crear Viaje</Text>
-                )}
-            </TouchableOpacity>
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    content: { padding: 20 },
-    saveButton: { padding: 16, borderRadius: 8, alignItems: 'center', marginTop: 24 },
+    content: { padding: 20, paddingBottom: 40 },
 });

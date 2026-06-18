@@ -19,8 +19,8 @@ const COL = 'trips';
 const COL2 = 'tripAccess';
 
 export const travelService = {
-    getAll: async (uid: string) => {
-        const q = query(collection(db, COL), where('uid', '==', uid));
+    getAll: async (uid: string) => { 
+        const q = query(collection(db, COL), where('ownerId', '==', uid));
         const snap = await getDocs(q);
         return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     },

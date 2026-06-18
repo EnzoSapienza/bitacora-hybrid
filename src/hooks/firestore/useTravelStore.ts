@@ -23,7 +23,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
                 id: doc.id,
                 name: doc.name || '',
                 description: doc.description || '',
-                ownerId: doc.uid || '',
+                ownerId: doc.ownerId || '',
                 imageUrl: doc.imageUrl || null,
                 startDate: doc.startDate?.toDate ? doc.startDate.toDate() : new Date(),
                 endDate: doc.endDate?.toDate ? doc.endDate.toDate() : new Date(),
@@ -43,7 +43,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
         set({ loading: true, error: null });
         try {
             await travelService.create(travelData);
-            await get().fetchTravels(travelData.uid);
+            await get().fetchTravels(travelData.ownerId);
         } catch (err: any) {
             set({ error: err.message || 'Error al crear el viaje', loading: false });
             throw err;
