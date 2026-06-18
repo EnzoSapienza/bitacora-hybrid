@@ -12,6 +12,7 @@ export const Colors = {
     grisOscuro: "#424242",
     grisMedio: "#9E9E9E",
     grisClaro: "#F5F5F5",
+    grisPlaceholder: "#DDE0E3",
 
     // OTROS COLORES
     blanco: "#FFFFFF",
