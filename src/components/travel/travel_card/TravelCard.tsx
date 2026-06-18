@@ -1,96 +1,12 @@
-import Travel from "@/types/models/travel";
-import { Pressable, Image, StyleSheet, View, Text } from "react-native";
+import React from "react";
+import { Pressable, StyleSheet, View, Text } from "react-native";
+import { Image } from "expo-image";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react";
-import { getTimeSinceText } from "@/components/utils/date";
-
-const styles = StyleSheet.create({
-    card: {
-        height: 155,
-        borderRadius: 4,
-        flexDirection: "row",
-        overflow: "hidden",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
-        padding: 12,
-
-        elevation: 6,
-    },
-
-    image: {
-        width: 120,
-        height: "100%",
-    },
-
-    content: {
-        flex: 1,
-        paddingTop: 22,
-        paddingBottom: 18,
-        paddingHorizontal: 16,
-
-        justifyContent: "space-between",
-    },
-
-    title: {
-        fontSize: 18,
-        fontWeight: "700",
-    },
-
-    subtitle: {
-        marginTop: 4,
-        color: "#888",
-        fontSize: 12,
-    },
-
-    footer: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-
-    bold: {
-        fontWeight: "700",
-    },
-
-    normal: {
-        fontWeight: "400",
-    },
-
-    topRight: {
-        position: "absolute",
-        top: 16,
-        right: 20,
-
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-    },
-
-    bottomRight: {
-        position: "absolute",
-        right: 20,
-        bottom: 20,
-    },
-
-    onCourse: {
-        color: "green",
-        fontWeight: "700",
-    },
-
-    finalized: {
-        color: "grey",
-        fontWeight: "700",
-    },
-
-    planning: {
-        color: "blue",
-        fontWeight: "700",
-    },
-});
+import Travel from "@/types/models/travel";
+import { useTheme } from "@/context/ThemeContext";
+import { Typography } from "@/constants/typography";
+import { getTimeSinceText, getTravelStatus } from "@/components/utils/date";
+import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 type TravelCardProps = {
     travel: Travel;
@@ -98,64 +14,148 @@ type TravelCardProps = {
 };
 
 const TravelCard = ({ travel, onPress }: TravelCardProps) => {
-    const now = new Date();
+    const { colors } = useTheme();
 
-    let completion = "";
-    let completionStyle = {};
+    const status = getTravelStatus(travel.startDate, travel.endDate, colors);
 
-    if (now < travel.startDate) {
-        completion = "PLANIFICANDO";
-        completionStyle = styles.planning;
-    } else if (now >= travel.startDate && now <= travel.endDate) {
-        completion = "EN CURSO";
-        completionStyle = styles.onCourse;
-    } else {
-        completion = "FINALIZADO";
-        completionStyle = styles.finalized;
-    }
+    const getVisibilityIcon = (vis: string) => {
+        switch (vis?.toLowerCase()) {
+            case "public": return "public";
+            case "followers": return "people";
+            default: return "lock";
+        }
+    };
 
     return (
-        <Pressable style={styles.card} onPress={onPress}>
-            {travel.imageUrl ? (
-                <Image source={{ uri: travel.imageUrl }} style={styles.image} />
-            ) : (
-                <View style={[styles.image, { backgroundColor: "#e5e7eb" }]} />
-            )}
+        <Pressable 
+            style={({ pressed }) => [
+                styles.card, 
+                { backgroundColor: colors.blanco, borderColor: colors.grisClaro, opacity: pressed ? 0.98 : 1 }
+            ]} 
+            onPress={onPress}
+        >
+            <View style={styles.imageContainer}>
+                {travel.imageUrl ? (
+                    <Image source={{ uri: travel.imageUrl }} style={styles.image} contentFit="cover" transition={150} />
+                ) : (
+                    <ImagePlaceholder currentColors={colors} padding={20} />
+                )}
+            </View>
 
             <View style={styles.content}>
-                <View>
-                    <Text style={styles.title}>{travel.name}</Text>
-                    <Text style={styles.subtitle}>
-                        {travel.startDate.toLocaleDateString()}
-                        {" — "}
-                        {travel.endDate.toLocaleDateString()}
+                <View style={styles.middleSection}>
+                    <Text style={[Typography.titleMedium, styles.title, { color: colors.grisOscuro }]} numberOfLines={1}>
+                        {travel.name}
+                    </Text>
+                    <Text style={[Typography.bodyMedium, { color: colors.grisMedio, marginTop: 4 }]}>
+                        {travel.startDate.toLocaleDateString()} — {travel.endDate.toLocaleDateString()}
                     </Text>
                 </View>
 
-                <View style={styles.footer}>
-                    <Text>
-                        <Text style={styles.bold}>
-                            {travel.pointsCount} PUNTOS
+                <View style={styles.footerContainer}>
+                    <View style={styles.infoGroup}>
+                        <MaterialIcons name="place" size={14} color={colors.azulProfundo} />
+                        <Text style={[Typography.labelSmall, { color: colors.grisOscuro, fontWeight: "700" }]}>
+                            {travel.pointsCount} {travel.pointsCount === 1 ? "PUNTO" : "PUNTOS"}
                         </Text>
+                    </View>
 
-                        {!travel.updatedAt ||
-                            " • ACT. " + getTimeSinceText(travel.updatedAt)}
-                    </Text>
+                    {travel.updatedAt && (
+                        <View style={styles.updateRow}>
+                            <MaterialIcons name="sync" size={14} color={colors.grisMedio} style={{ marginRight: 4 }} />
+                            <Text style={[Typography.labelSmall, { color: colors.grisMedio, fontSize: 11 }]} numberOfLines={1}>
+                                ACT. {getTimeSinceText(travel.updatedAt)}
+                            </Text>
+                        </View>
+                    )}
                 </View>
             </View>
 
             <View style={styles.topRight}>
-                <MaterialIcons name="visibility" size={14} />
-                <Text style={completionStyle}>{completion}</Text>
+                <MaterialIcons name={getVisibilityIcon(travel.visibility)} size={14} color={colors.grisMedio} />
+                <Text style={[styles.statusText, { color: status.color }]}>{status.label}</Text>
             </View>
 
             <MaterialIcons
                 name="arrow-outward"
                 size={18}
+                color={colors.grisMedio}
                 style={styles.bottomRight}
             />
         </Pressable>
     );
 };
+
+const styles = StyleSheet.create({
+    card: {
+        height: 155,
+        borderRadius: 20,
+        flexDirection: "row",
+        borderWidth: 1,
+        marginBottom: 16,
+        position: "relative",
+        overflow: "hidden",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.03,
+        shadowRadius: 12,
+        elevation: 3,
+    },
+    imageContainer: { 
+        width: 125, 
+        height: "100%" 
+    },
+    image: { 
+        width: "100%", 
+        height: "100%" 
+    },
+    content: {
+        flex: 1,
+        padding: 16,
+        justifyContent: "space-between",
+    },
+    topRight: {
+        position: "absolute",
+        top: 16,
+        right: 16,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+    statusText: {
+        fontWeight: "700",
+        fontSize: 12,
+    },
+    middleSection: {
+        flex: 1,
+        justifyContent: "center",
+        marginTop: 14,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: "700",
+        width: "100%",
+        paddingRight: 24,
+    },
+    footerContainer: {
+        gap: 4,
+        paddingRight: 35,
+    },
+    infoGroup: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+    },
+    updateRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingTop: 4,
+    },
+    bottomRight: {
+        position: "absolute",
+        right: 16,
+        bottom: 16,
+    },
+});
 
 export default TravelCard;
