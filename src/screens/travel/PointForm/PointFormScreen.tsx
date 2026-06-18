@@ -12,7 +12,6 @@ import { Typography } from '@/constants/typography';
 import { TravelStackParamList } from '@/navigation/tabs/TravelNavigator';
 import { formatDate, formatTime } from '@/components/utils/date';
 import { useImagePicker } from '@/hooks/useImagePicker';
-import { useReverseGeocode } from '@/hooks/useReverseGeocode';
 
 import { PointFormContent } from './PointFormContent';
 
@@ -25,7 +24,7 @@ export default function PointFormScreen() {
 
     const { colors } = useTheme();
     const { addPoint, loading: storeLoading, error } = usePoiStore();
-    const { location, errorMsg } = useLocation();
+    const { location, errorMsg, loading: locationLoading } = useLocation();
     const { uploadImage, uploading: uploadingImages } = useCloudinaryUpload();
 
     const travel = useTravelStore((state) =>
@@ -36,9 +35,10 @@ export default function PointFormScreen() {
     const [notes, setNotes] = useState('');
     const [visitDate, setVisitDate] = useState(new Date());
     const [visitTime, setVisitTime] = useState(new Date());
+    const [capturedCoords, setCapturedCoords] = useState<{ lat: number; lng: number } | null>(null);
+    const [address, setAddress] = useState('');
 
     const { selectedImages, handlePickImages, handleRemovePhoto } = useImagePicker();
-    const { capturedCoords, address, setAddress, resolvingAddress, captureLocation } = useReverseGeocode();
 
     const inicioViaje = travel ? new Date(travel.startDate) : null;
     const finViaje = travel ? new Date(travel.endDate) : null;
@@ -49,9 +49,13 @@ export default function PointFormScreen() {
         : '';
 
     const isFormValid = name.trim().length > 0 && capturedCoords !== null && !isFechaInvalida;
-    const estaCargando = storeLoading || uploadingImages || resolvingAddress;
+    const estaCargando = storeLoading || uploadingImages || locationLoading;
 
-    const handleCaptureLocation = () => captureLocation(location, errorMsg);
+    const handleCaptureLocation = () => {
+        if (!location || errorMsg) return;
+        setCapturedCoords({ lat: location.latitude, lng: location.longitude });
+        setAddress(location.address);
+    };
 
     const handleSave = async () => {
         if (!isFormValid || !capturedCoords || isFechaInvalida) return;
@@ -117,7 +121,7 @@ export default function PointFormScreen() {
                 selectedImages={selectedImages}
                 handlePickImages={handlePickImages}
                 handleRemovePhoto={handleRemovePhoto}
-                resolvingAddress={resolvingAddress}
+                resolvingAddress={locationLoading}
                 isFechaInvalida={isFechaInvalida}
                 rangoTexto={rangoTexto}
             />
