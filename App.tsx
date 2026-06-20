@@ -3,9 +3,24 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { authService } from "./src/services/authService";
 import { useAuthStore } from "./src/store/authStore";
 import RootNavigator from "./src/navigation/RootNavigator";
-import { ThemeProvider } from "./src/context/ThemeContext";
-import { PaperProvider } from "react-native-paper";
+import { PaperProvider, MD3DarkTheme, MD3LightTheme } from "react-native-paper";
 import { ConfirmProvider } from "@/context/confirm/ConfirmProvider";
+import { useAppStore } from "./src/store/appStore";
+
+function AppContent() {
+    const resolvedTheme = useAppStore((s) => s.resolvedTheme);
+
+    console.log("TEMA ACTUAL:", resolvedTheme);
+    const paperTheme = resolvedTheme === "dark" ? MD3DarkTheme : MD3LightTheme;
+
+    return (
+        <PaperProvider theme={paperTheme}>
+            <ConfirmProvider>
+                <RootNavigator />
+            </ConfirmProvider>
+        </PaperProvider>
+    );
+}
 
 export default function App() {
     const [loading, setLoading] = useState(true);
@@ -29,13 +44,7 @@ export default function App() {
 
     return (
         <SafeAreaProvider>
-            <ThemeProvider>
-                <PaperProvider>
-                    <ConfirmProvider>
-                        <RootNavigator />
-                    </ConfirmProvider>
-                </PaperProvider>
-            </ThemeProvider>
+            <AppContent />
         </SafeAreaProvider>
     );
 }

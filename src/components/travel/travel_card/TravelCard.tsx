@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View, Text } from "react-native";
 import { Image } from "expo-image";
 import { MaterialIcons } from "@expo/vector-icons";
 import Travel from "@/types/models/travel";
-import { useTheme } from "@/context/ThemeContext";
+import { useAppStore } from "@/store/appStore";
 import { Typography } from "@/constants/typography";
 import { getTimeSinceText, getTravelStatus } from "@/components/utils/date";
 import ImagePlaceholder from "@/components/common/ImagePlaceholder";
@@ -14,7 +14,7 @@ type TravelCardProps = {
 };
 
 const TravelCard = ({ travel, onPress }: TravelCardProps) => {
-    const { colors } = useTheme();
+    const colors = useAppStore((s) => s.themescolors);
 
     const status = getTravelStatus(travel.startDate, travel.endDate, colors);
 

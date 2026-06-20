@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { useTheme } from "@/context/ThemeContext";
+import { useAppStore } from "@/store/appStore";
 import { MaterialIcons } from "@expo/vector-icons";
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
 };
 
 export default function AddButton({ onPress }: Props) {
-    const { colors } = useTheme();
+    const colors = useAppStore((s) => s.themescolors);
 
     return (
         <TouchableOpacity

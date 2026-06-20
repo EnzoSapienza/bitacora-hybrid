@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { parse, isValid, startOfDay, endOfDay } from 'date-fns';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTravelStore } from '../../../hooks/firestore/useTravelStore';
-import { useAuth } from '../../../hooks/useAuth';
-import { useTheme } from '../../../context/ThemeContext';
+import { useAuth } from '../../../hooks/useAuth'; 
+import { useAppStore } from '../../../store/appStore';
 import { useCloudinaryUpload } from '../../../hooks/useCloudinaryUpload';
 import { useImagePicker } from '../../../hooks/useImagePicker';
 import { Typography } from '../../../constants/typography';
@@ -14,7 +14,7 @@ import { TravelFormContent } from './TravelFormContent';
 
 export default function TravelFormScreen() {
     const navigation = useNavigation();
-    const { theme, colors } = useTheme();
+    const colors = useAppStore((s) => s.themescolors);
     const { user } = useAuth();
     const { addTravel, loading: storeLoading, error } = useTravelStore();
     const { uploadImage, uploading } = useCloudinaryUpload();
@@ -108,8 +108,7 @@ export default function TravelFormScreen() {
             style={[styles.container, { backgroundColor: colors.grisFondoApp }]}
             contentContainerStyle={styles.content}
         >
-            <TravelFormContent
-                theme={theme}
+            <TravelFormContent 
                 currentColors={colors}
                 name={name}
                 setName={setName}

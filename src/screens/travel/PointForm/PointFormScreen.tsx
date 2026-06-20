@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import { usePoiStore } from '@/hooks/firestore/usePoiStore';
 import { useTravelStore } from '@/hooks/firestore/useTravelStore';
-import { useTheme } from '@/context/ThemeContext';
+import { useAppStore } from '@/store/appStore';
 import useLocation from '@/hooks/useLocation';
 import { useCloudinaryUpload } from '@/hooks/useCloudinaryUpload';
 import { Typography } from '@/constants/typography';
@@ -22,7 +22,7 @@ export default function PointFormScreen() {
     const route = useRoute<PointFormRouteProp>();
     const { travelId } = route.params;
 
-    const { colors } = useTheme();
+    const colors = useAppStore((s) => s.themescolors);
     const { addPoint, loading: storeLoading, error } = usePoiStore();
     const { location, errorMsg, loading: locationLoading } = useLocation();
     const { uploadImage, uploading: uploadingImages } = useCloudinaryUpload();

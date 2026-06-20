@@ -4,11 +4,13 @@ import { useNavigation } from "@react-navigation/native";
 import TravelList from "@/components/travel/travel_list/TravelList";
 import { useTravelStore } from "@/hooks/firestore/useTravelStore";
 import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/appStore";
 import AddButton from "@/components/add_button/AddButton";
 
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
     const user = useAuthStore((state) => state.user);
+    const colors = useAppStore((s) => s.themescolors);
     const { travels, loading, fetchTravels } = useTravelStore();
 
     useEffect(() => {
@@ -19,14 +21,14 @@ export default function HomeScreen() {
 
     if (loading) {
         return (
-            <View style={styles.center}>
+            <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
                 <ActivityIndicator size="large" color="#0D47A1" />
             </View>
         );
     }
 
     return (
-        <View style={styles.container}> 
+        <View style={[styles.container, { backgroundColor: colors.grisFondoApp }]}>
             <TravelList
                 travels={travels}
                 onPressItem={(item) => 

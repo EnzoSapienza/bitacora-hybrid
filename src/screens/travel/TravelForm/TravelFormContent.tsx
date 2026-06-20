@@ -6,8 +6,7 @@ import { Typography } from '../../../constants/typography';
 import { DatePickerField } from '../../../components/utils/DatePickerField';
 import { Dispatch, SetStateAction } from 'react';
 
-interface TravelFormContentProps {
-    theme: 'light' | 'dark';
+interface TravelFormContentProps { 
     currentColors: any;
     name: string;
     setName: (text: string) => void;

@@ -7,7 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import { useTravelStore } from '@/hooks/firestore/useTravelStore';
 import { usePoiStore } from '@/hooks/firestore/usePoiStore';
-import { useTheme } from '@/context/ThemeContext';
+import { useAppStore } from '@/store/appStore';
 import { Typography } from '@/constants/typography';
 import AddButton from '@/components/add_button/AddButton';
 import { TravelStackParamList } from '@/navigation/tabs/TravelNavigator';
@@ -25,7 +25,7 @@ export default function TravelDetailScreen() {
     const navigation = useNavigation<DetailNavProp>();
     const { travelId } = route.params;
     
-    const { colors } = useTheme();
+    const colors = useAppStore((s) => s.themescolors);
     
     const travel = useTravelStore((state) => 
         state.travels.find((t) => t.id === travelId)
@@ -76,12 +76,12 @@ export default function TravelDetailScreen() {
     const renderHeaderContent = () => (
         <View style={styles.headerContent}>
             <View style={styles.dateRow}>
-                <MaterialIcons name="calendar-today" size={14} color={colors.grisClaro} style={styles.dateIcon} />
-                <Text style={[Typography.labelSmall, { color: colors.grisClaro, opacity: 0.9 }]}>
+                <MaterialIcons name="calendar-today" size={14} color="#FFFFFF" style={styles.dateIcon} />
+                <Text style={[Typography.labelSmall, { color: "#FFFFFF", opacity: 0.9 }]}>
                     {travel.startDate.toLocaleDateString()} — {travel.endDate.toLocaleDateString()}
                 </Text>
                 <View style={styles.diasChip}>
-                    <Text style={[Typography.labelSmall, { color: colors.grisClaro, fontWeight: '700', fontSize: 11 }]}>
+                    <Text style={[Typography.labelSmall, { color: "#FFFFFF", fontWeight: '700', fontSize: 11 }]}>
                         {travel.durationDays} {travel.durationDays === 1 ? 'DÍA' : 'DÍAS'}
                     </Text>
                 </View>
@@ -90,12 +90,12 @@ export default function TravelDetailScreen() {
                 descripcionExpandida ? (
                     <View style={styles.descripcionExpandidaBox}>
                         <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={true}>
-                            <Text style={[Typography.bodyMedium, { color: colors.grisClaro, opacity: 0.85 }]}>
+                            <Text style={[Typography.bodyMedium, { color: "#FFFFFF", opacity: 0.85 }]}>
                                 {travel.description}
                             </Text>
                         </ScrollView>
                         <TouchableOpacity onPress={() => setDescripcionExpandida(false)} activeOpacity={0.7} style={styles.verMasBtn}>
-                            <Text style={[Typography.labelSmall, { color: colors.grisClaro, fontWeight: '700' }]}>
+                            <Text style={[Typography.labelSmall, { color: "#FFFFFF", fontWeight: '700' }]}>
                                 Ver menos
                             </Text>
                         </TouchableOpacity>
@@ -103,14 +103,14 @@ export default function TravelDetailScreen() {
                 ) : (
                     <View>
                         <Text 
-                            style={[Typography.bodyMedium, { color: colors.grisClaro, marginTop: 6, opacity: 0.85 }]} 
+                            style={[Typography.bodyMedium, { color: "#FFFFFF", marginTop: 6, opacity: 0.85 }]} 
                             numberOfLines={2}
                         >
                             {travel.description}
                         </Text>
                         {travel.description.length > 80 && (
                             <TouchableOpacity onPress={() => setDescripcionExpandida(true)} activeOpacity={0.7} style={styles.verMasBtn}>
-                                <Text style={[Typography.labelSmall, { color: colors.grisClaro, fontWeight: '700' }]}>
+                                <Text style={[Typography.labelSmall, { color: "#FFFFFF", fontWeight: '700' }]}>
                                     Ver más
                                 </Text>
                             </TouchableOpacity>

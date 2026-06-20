@@ -4,7 +4,7 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { usePoiStore } from '@/hooks/firestore/usePoiStore';
-import { useTheme } from '@/context/ThemeContext';
+import { useAppStore } from '@/store/appStore';
 import { Typography } from '@/constants/typography';
 import { TravelStackParamList } from '@/navigation/tabs/TravelNavigator';
 import ImagePlaceholder from '@/components/common/ImagePlaceholder';
@@ -18,7 +18,7 @@ export default function PointOfInterestScreen() {
     const navigation = useNavigation();
     const { pointId } = route.params;
 
-    const { colors } = useTheme();
+    const colors = useAppStore((s) => s.themescolors);
 
     const point = usePoiStore((state) =>
         state.points.find((p) => p.id === pointId)
