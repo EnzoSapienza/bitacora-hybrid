@@ -3,7 +3,9 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platfo
 import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTranslation } from 'react-i18next';
 import { Typography } from '@/constants/typography';
+import { formatDate, formatTime } from '@/components/utils/date';
 
 interface PointFormContentProps {
     currentColors: any;
@@ -48,18 +50,23 @@ export function PointFormContent({
     isFechaInvalida,
     rangoTexto,
 }: PointFormContentProps) {
+    const { t } = useTranslation();
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
     const onChangeDate = (event: any, selectedDate?: Date) => {
-        setShowDatePicker(Platform.OS === 'ios');
+        if (Platform.OS === 'android') {
+            setShowDatePicker(false);
+        }
         if (selectedDate) {
             setVisitDate(selectedDate);
         }
     };
 
     const onChangeTime = (event: any, selectedTime?: Date) => {
-        setShowTimePicker(Platform.OS === 'ios');
+        if (Platform.OS === 'android') {
+            setShowTimePicker(false);
+        }
         if (selectedTime) {
             setVisitTime(selectedTime);
         }
@@ -70,14 +77,14 @@ export function PointFormContent({
     return (
         <View style={styles.container}>
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 8 }]}>
-                Nombre del lugar
+                {t('travel.poiForm.nameLabel')}
             </Text>
             <TextInput
                 style={[
                     styles.input, 
                     { backgroundColor: currentColors.blanco, color: currentColors.grisOscuro, borderColor: currentColors.grisClaro }
                 ]}
-                placeholder="Ej. Hotel Central, Resto Bar..."
+                placeholder={t('travel.poiForm.namePlaceholder')}
                 placeholderTextColor={currentColors.grisMedio}
                 maxLength={100}
                 value={name}
@@ -85,14 +92,14 @@ export function PointFormContent({
             />
 
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 16 }]}>
-                Dirección
+                {t('travel.poiForm.addressLabel')}
             </Text>
             <TextInput
                 style={[
                     styles.input, 
                     { backgroundColor: currentColors.blanco, color: currentColors.grisOscuro, borderColor: currentColors.grisClaro }
                 ]}
-                placeholder="Calle, número, ciudad..."
+                placeholder={t('travel.poiForm.addressPlaceholder')}
                 placeholderTextColor={currentColors.grisMedio}
                 maxLength={150}
                 value={address}
@@ -100,7 +107,7 @@ export function PointFormContent({
             />
 
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 16 }]}>
-                Ubicación Geográfica
+                {t('travel.poiForm.locationLabel')}
             </Text>
             <View style={styles.rowGap}>
                 <TouchableOpacity
@@ -126,7 +133,7 @@ export function PointFormContent({
                         />
                     )}
                     <Text style={[Typography.bodyMedium, { color: capturedCoords ? currentColors.azulProfundo : currentColors.grisMedio, fontWeight: '600' }]}>
-                        {resolvingAddress ? "Buscando..." : "Mi ubicación"}
+                        {resolvingAddress ? t('travel.poiForm.searching') : t('travel.poiForm.myLocation')}
                     </Text>
                 </TouchableOpacity>
 
@@ -139,28 +146,28 @@ export function PointFormContent({
                 >
                     <MaterialIcons name="map" size={20} color={currentColors.grisMedio} style={{ marginRight: 6 }} />
                     <Text style={[Typography.bodyMedium, { color: currentColors.grisMedio, fontWeight: '600' }]}>
-                        Ver en el mapa
+                        {t('travel.poiForm.viewOnMap')}
                     </Text>
                 </TouchableOpacity>
             </View>
 
             {!capturedCoords && (
                 <Text style={[Typography.labelSmall, { color: currentColors.grisMedio, marginTop: 6, fontWeight: '500' }]}>
-                    * Confirma la ubicación para guardar el punto de interés.
+                    {t('travel.poiForm.confirmLocationHint')}
                 </Text>
             )}
 
             <View style={[styles.rowGap, { marginTop: 16 }]}>
                 <View style={{ flex: 1 }}>
                     <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8 }]}>
-                        Fecha de visita
+                        {t('travel.poiForm.visitDateLabel')}
                     </Text>
                     <TouchableOpacity
                         style={[styles.input, styles.pickerTrigger, { backgroundColor: currentColors.blanco, borderColor: currentColors.grisClaro }]}
                         onPress={() => setShowDatePicker(true)}
                     >
                         <Text style={{ color: currentColors.grisOscuro, fontSize: 16 }}>
-                            {visitDate.toLocaleDateString()}
+                            {formatDate(visitDate)}
                         </Text>
                         <MaterialIcons name="calendar-today" size={18} color={currentColors.grisMedio} />
                     </TouchableOpacity>
@@ -169,21 +176,22 @@ export function PointFormContent({
                             value={visitDate}
                             mode="date"
                             display="default"
-                            onChange={onChangeDate}
+                            onValueChange={onChangeDate}
+                            onDismiss={() => setShowDatePicker(false)}
                         />
                     )}
                 </View>
 
                 <View style={{ flex: 1 }}>
                     <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8 }]}>
-                        Hora de visita
+                        {t('travel.poiForm.visitTimeLabel')}
                     </Text>
                     <TouchableOpacity
                         style={[styles.input, styles.pickerTrigger, { backgroundColor: currentColors.blanco, borderColor: currentColors.grisClaro }]}
                         onPress={() => setShowTimePicker(true)}
                     >
                         <Text style={{ color: currentColors.grisOscuro, fontSize: 16 }}>
-                            {visitTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                            {formatTime(visitTime)}
                         </Text>
                         <MaterialIcons name="access-time" size={18} color={currentColors.grisMedio} />
                     </TouchableOpacity>
@@ -193,7 +201,8 @@ export function PointFormContent({
                             mode="time"
                             is24Hour={true}
                             display="default"
-                            onChange={onChangeTime}
+                            onValueChange={onChangeTime}
+                            onDismiss={() => setShowTimePicker(false)}
                         />
                     )}
                 </View>
@@ -201,18 +210,18 @@ export function PointFormContent({
 
             {rangoTexto ? (
                 <Text style={[Typography.labelSmall, { color: currentColors.grisMedio, marginTop: 6, fontWeight: '500' }]}>
-                    Fechas disponibles del viaje: {rangoTexto}
+                    {t('travel.poiForm.availableDatesPrefix')} {rangoTexto}
                 </Text>
             ) : null}
 
             {isFechaInvalida && (
                 <Text style={[Typography.labelSmall, { color: currentColors.rojoPin, marginTop: 4, fontWeight: '600' }]}>
-                    La fecha seleccionada se encuentra fuera del rango de este viaje.
+                    {t('travel.poiForm.dateOutOfRange')}
                 </Text>
             )}
 
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 16 }]}>
-                Notas
+                {t('travel.poiForm.notesLabel')}
             </Text>
             <TextInput
                 style={[
@@ -224,7 +233,7 @@ export function PointFormContent({
                         borderColor: notesLength >= 300 ? currentColors.rojoPin : currentColors.grisClaro 
                     }
                 ]}
-                placeholder="¿Qué quieres recordar de este lugar?"
+                placeholder={t('travel.poiForm.notesPlaceholder')}
                 placeholderTextColor={currentColors.grisMedio}
                 multiline
                 numberOfLines={4}
@@ -243,7 +252,7 @@ export function PointFormContent({
             </Text>
 
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 12 }]}>
-                Fotos del Lugar
+                {t('travel.poiForm.photosLabel')}
             </Text>
             
             <ScrollView 
@@ -257,7 +266,9 @@ export function PointFormContent({
                     activeOpacity={0.7}
                 >
                     <MaterialIcons name="photo-camera" size={24} color={currentColors.grisMedio} />
-                    <Text style={[Typography.labelSmall, { color: currentColors.grisMedio, fontWeight: '600', marginTop: 2 }]}>Añadir</Text>
+                    <Text style={[Typography.labelSmall, { color: currentColors.grisMedio, fontWeight: '600', marginTop: 2 }]}>
+                        {t('travel.poiForm.addPhoto')}
+                    </Text>
                 </TouchableOpacity>
 
                 {selectedImages.map((uri, index) => (

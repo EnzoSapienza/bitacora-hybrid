@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import * as ImagePicker from "expo-image-picker";
 import { authService } from "./src/services/authService";
 import { useAuthStore } from "./src/store/authStore";
 import RootNavigator from "./src/navigation/RootNavigator";
 import { PaperProvider, MD3DarkTheme, MD3LightTheme } from "react-native-paper";
 import { ConfirmProvider } from "@/context/confirm/ConfirmProvider";
 import { useAppStore } from "./src/store/appStore";
+import "./src/i18n";
 
 function AppContent() {
     const resolvedTheme = useAppStore((s) => s.resolvedTheme);
-
-    console.log("TEMA ACTUAL:", resolvedTheme);
     const paperTheme = resolvedTheme === "dark" ? MD3DarkTheme : MD3LightTheme;
 
     return (

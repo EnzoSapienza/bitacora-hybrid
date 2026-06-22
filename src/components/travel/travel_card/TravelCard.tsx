@@ -2,10 +2,11 @@ import React from "react";
 import { Pressable, StyleSheet, View, Text } from "react-native";
 import { Image } from "expo-image";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import Travel from "@/types/models/travel";
 import { useAppStore } from "@/store/appStore";
 import { Typography } from "@/constants/typography";
-import { getTimeSinceText, getTravelStatus } from "@/components/utils/date";
+import { formatDateLocalized, getTimeSinceText, getTravelStatus } from "@/components/utils/date";
 import ImagePlaceholder from "@/components/common/ImagePlaceholder";
 
 type TravelCardProps = {
@@ -15,8 +16,9 @@ type TravelCardProps = {
 
 const TravelCard = ({ travel, onPress }: TravelCardProps) => {
     const colors = useAppStore((s) => s.themescolors);
+    const { t, i18n } = useTranslation();
 
-    const status = getTravelStatus(travel.startDate, travel.endDate, colors);
+    const status = getTravelStatus(travel.startDate, travel.endDate, colors, t);
 
     const getVisibilityIcon = (vis: string) => {
         switch (vis?.toLowerCase()) {
@@ -48,7 +50,7 @@ const TravelCard = ({ travel, onPress }: TravelCardProps) => {
                         {travel.name}
                     </Text>
                     <Text style={[Typography.bodyMedium, { color: colors.grisMedio, marginTop: 4 }]}>
-                        {travel.startDate.toLocaleDateString()} — {travel.endDate.toLocaleDateString()}
+                        {formatDateLocalized(travel.startDate, i18n.language)} — {formatDateLocalized(travel.endDate, i18n.language)}
                     </Text>
                 </View>
 
@@ -56,7 +58,7 @@ const TravelCard = ({ travel, onPress }: TravelCardProps) => {
                     <View style={styles.infoGroup}>
                         <MaterialIcons name="place" size={14} color={colors.azulProfundo} />
                         <Text style={[Typography.labelSmall, { color: colors.grisOscuro, fontWeight: "700" }]}>
-                            {travel.pointsCount} {travel.pointsCount === 1 ? "PUNTO" : "PUNTOS"}
+                            {travel.pointsCount} {t("travel.points", { count: travel.pointsCount })}
                         </Text>
                     </View>
 
@@ -64,7 +66,7 @@ const TravelCard = ({ travel, onPress }: TravelCardProps) => {
                         <View style={styles.updateRow}>
                             <MaterialIcons name="sync" size={14} color={colors.grisMedio} style={{ marginRight: 4 }} />
                             <Text style={[Typography.labelSmall, { color: colors.grisMedio, fontSize: 11 }]} numberOfLines={1}>
-                                ACT. {getTimeSinceText(travel.updatedAt)}
+                                {t("travel.updatedPrefix")} {getTimeSinceText(travel.updatedAt, i18n.language)}
                             </Text>
                         </View>
                     )}

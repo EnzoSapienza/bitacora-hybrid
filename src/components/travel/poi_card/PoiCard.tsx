@@ -2,41 +2,26 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Typography } from '@/constants/typography';
 import ImagePlaceholder from '@/components/common/ImagePlaceholder';
+import { formatTimeLocalized, formatShortBadgeDate } from '@/components/utils/date';
 
 interface PoiCardProps {
     point: {
         id: string;
         name: string;
         address: string;
-        visitDate: string;
-        visitTime: string;
+        visitDate: Date | null;
         imageUrls: string[];
     };
     currentColors: any;
     onPress: () => void;
 }
 
-const MESES_ABREVIADOS = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-
 export default function PoiCard({ point, currentColors, onPress }: PoiCardProps) {
+    const { t, i18n } = useTranslation();
     const tieneFotos = point.imageUrls && point.imageUrls.length > 0;
-
-    const filtrarHoraMilital = (timeStr: string) => {
-        if (!timeStr) return '';
-        return timeStr.replace(/[^0-9:]/g, '').trim();
-    };
-
-    const formatearFechaCorta = (fechaStr: string) => {
-        if (!fechaStr) return '';
-        const partes = fechaStr.split('/');
-        if (partes.length !== 3) return fechaStr;
-        const dia = parseInt(partes[0], 10);
-        const mesIndex = parseInt(partes[1], 10) - 1;
-        if (isNaN(dia) || mesIndex < 0 || mesIndex > 11) return fechaStr;
-        return `${MESES_ABREVIADOS[mesIndex]} ${dia}`;
-    };
 
     return (
         <TouchableOpacity
@@ -57,7 +42,7 @@ export default function PoiCard({ point, currentColors, onPress }: PoiCardProps)
 
                 <View style={[styles.dateBadge, { backgroundColor: currentColors.blanco }]}>
                     <Text style={[Typography.labelSmall, { color: currentColors.azulProfundo, fontWeight: '700' }]}>
-                        {formatearFechaCorta(point.visitDate)}
+                        {point.visitDate ? formatShortBadgeDate(point.visitDate, t) : ''}
                     </Text>
                 </View>
             </View>
@@ -79,7 +64,7 @@ export default function PoiCard({ point, currentColors, onPress }: PoiCardProps)
                 <View style={styles.detailRow}>
                     <MaterialIcons name="access-time" size={14} color={currentColors.grisMedio} style={styles.iconGap} />
                     <Text style={[Typography.labelSmall, { color: currentColors.grisMedio }]}>
-                        {filtrarHoraMilital(point.visitTime)} hs
+                        {point.visitDate ? formatTimeLocalized(point.visitDate, i18n.language) : ''}
                     </Text>
                 </View>
             </View>

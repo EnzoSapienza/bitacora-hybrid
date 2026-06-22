@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { useTranslation } from 'react-i18next';
 import { Typography } from '../../../constants/typography';
 import { DatePickerField } from '../../../components/utils/DatePickerField';
 import { Dispatch, SetStateAction } from 'react';
@@ -23,12 +24,6 @@ interface TravelFormContentProps {
     dateError: string | null;
 }
 
-const VISIBILITY_OPTIONS = [
-    { value: 'PRIVATE', label: 'Privado', icon: 'lock' },
-    { value: 'FOLLOWERS', label: 'Amigos', icon: 'people' },
-    { value: 'PUBLIC', label: 'Público', icon: 'public' },
-] as const;
-
 export function TravelFormContent({
     currentColors,
     name,
@@ -45,6 +40,14 @@ export function TravelFormContent({
     handlePickImages,
     dateError,
 }: TravelFormContentProps) {
+    const { t } = useTranslation();
+
+    const VISIBILITY_OPTIONS = [
+        { value: 'PRIVATE', label: t('travel.form.visibilityOptions.private'), icon: 'lock' },
+        { value: 'FOLLOWERS', label: t('travel.form.visibilityOptions.followers'), icon: 'people' },
+        { value: 'PUBLIC', label: t('travel.form.visibilityOptions.public'), icon: 'public' },
+    ] as const;
+
     return (
         <View style={styles.container}>
             {imageUrl ? (
@@ -54,7 +57,7 @@ export function TravelFormContent({
                         style={[styles.removeButton, { backgroundColor: currentColors.rojoPin }]}
                         onPress={handlePickImages}
                     >
-                        <Text style={[Typography.labelLarge, { color: '#FFFFFF' }]}>Cambiar Foto</Text>
+                        <Text style={[Typography.labelLarge, { color: '#FFFFFF' }]}>{t('travel.form.changePhoto')}</Text>
                     </TouchableOpacity>
                 </View>
             ) : (
@@ -65,17 +68,17 @@ export function TravelFormContent({
                 >
                     <MaterialIcons name="photo-camera" size={38} color={currentColors.grisMedio} style={{ marginBottom: 8 }} />
                     <Text style={[Typography.bodyLarge, { color: currentColors.grisMedio, fontWeight: '600' }]}>
-                        Agregar foto de portada
+                        {t('travel.form.addCoverPhoto')}
                     </Text>
                 </TouchableOpacity>
             )}
 
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 24 }]}>
-                Nombre del Viaje
+                {t('travel.form.nameLabel')}
             </Text>
             <TextInput
                 style={[styles.input, { backgroundColor: currentColors.blanco, color: currentColors.grisOscuro, borderColor: currentColors.grisClaro }]}
-                placeholder="Nombre"
+                placeholder={t('travel.form.namePlaceholder')}
                 placeholderTextColor={currentColors.grisMedio}
                 maxLength={100}
                 value={name}
@@ -83,11 +86,11 @@ export function TravelFormContent({
             />
 
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 16 }]}>
-                Descripción
+                {t('travel.form.descriptionLabel')}
             </Text>
             <TextInput
                 style={[styles.input, styles.textArea, { backgroundColor: currentColors.blanco, color: currentColors.grisOscuro, borderColor: currentColors.grisClaro }]}
-                placeholder="Descripción"
+                placeholder={t('travel.form.descriptionPlaceholder')}
                 placeholderTextColor={currentColors.grisMedio}
                 multiline
                 numberOfLines={4}
@@ -101,14 +104,14 @@ export function TravelFormContent({
 
             <View style={[styles.row, { marginTop: 8 }]}>
                 <DatePickerField
-                    label="Fecha Inicio"
+                    label={t('travel.form.startDateLabel')}
                     value={startDateStr}
                     onChangeText={setStartDateStr}
                     currentColors={currentColors}
                 />
                 <View style={{ width: 12 }} />
                 <DatePickerField
-                    label="Fecha Fin"
+                    label={t('travel.form.endDateLabel')}
                     value={endDateStr}
                     onChangeText={setEndDateStr}
                     currentColors={currentColors}
@@ -122,7 +125,7 @@ export function TravelFormContent({
             )}
 
             <Text style={[Typography.labelLarge, { color: currentColors.azulOscuro, marginBottom: 8, marginTop: 16 }]}>
-                Visibilidad del Viaje
+                {t('travel.form.visibilityLabel')}
             </Text>
             <View style={styles.row}>
                 {VISIBILITY_OPTIONS.map((option, index) => {

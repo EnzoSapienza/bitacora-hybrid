@@ -1,0 +1,106 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "months": {
+            "jan": "JAN",
+            "feb": "FEB",
+            "mar": "MAR",
+            "apr": "APR",
+            "may": "MAY",
+            "jun": "JUN",
+            "jul": "JUL",
+            "aug": "AUG",
+            "sep": "SEP",
+            "oct": "OCT",
+            "nov": "NOV",
+            "dec": "DEC"
+        }
+    },
+    "imagePicker": {
+        "permissions": {
+            "title": "Permission required",
+            "galleryConfig": "Gallery access is needed. Please enable it in your phone settings.",
+            "galleryWarning": "Gallery access is needed to add photos.",
+            "cameraConfig": "Camera access is needed. Please enable it in your phone settings.",
+            "cameraWarning": "Camera access is needed to take pictures.",
+            "openSettings": "Open Settings"
+        },
+        "source": {
+            "title": "Where would you like to load the image from?",
+            "gallery": "Photo Gallery",
+            "camera": "Take Photo"
+        },
+        "errors": {
+            "title": "Error",
+            "gallery": "There was a problem opening the gallery.",
+            "camera": "There was a problem using the camera."
+        }
+    },
+    "home": {
+        "title": "Home"
+    },
+    "travel": {
+        "create": "Create trip",
+        "poiCount_one": "{{count}} point of interest",
+        "poiCount_other": "{{count}} points of interest",
+        "points_one": "POINT",
+        "points_other": "POINTS",
+        "updatedPrefix": "UPD.",
+        "status": {
+            "planning": "PLANNING",
+            "ongoing": "ONGOING",
+            "finished": "FINISHED"
+        },
+        "poi": "Points of interest",
+        "visibility": {
+            "public": "PUBLIC",
+            "followers": "FOLLOWERS",
+            "private": "PRIVATE"
+        },
+        "days_one": "DAY",
+        "days_other": "DAYS",
+        "seeMore": "See more",
+        "seeLess": "See less",
+        "poiEmptyPlaceholder": "Points of interest will be listed in this section",
+        "notFound": "The selected trip was not found.",
+        "form": {
+            "changePhoto": "Change Photo",
+            "addCoverPhoto": "Add cover photo",
+            "nameLabel": "Trip Name",
+            "namePlaceholder": "Name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Description",
+            "startDateLabel": "Start Date",
+            "endDateLabel": "End Date",
+            "visibilityLabel": "Trip Visibility",
+            "visibilityOptions": {
+                "private": "Private",
+                "followers": "Friends",
+                "public": "Public"
+            },
+            "dateError": "The start date cannot be later than the end date.",
+            "uploadError": "Could not upload the cover photo. Please try again."
+        },
+        "poiForm": {
+            "nameLabel": "Place name",
+            "namePlaceholder": "E.g. Central Hotel, Resto Bar...",
+            "addressLabel": "Address",
+            "addressPlaceholder": "Street, number, city...",
+            "locationLabel": "Geographic Location",
+            "myLocation": "My location",
+            "searching": "Searching...",
+            "viewOnMap": "View on map",
+            "confirmLocationHint": "* Confirm the location to save the point of interest.",
+            "visitDateLabel": "Visit date",
+            "visitTimeLabel": "Visit time",
+            "availableDatesPrefix": "Available trip dates:",
+            "dateRangeJoin": "to",
+            "dateOutOfRange": "The selected date is outside this trip's range.",
+            "notesLabel": "Notes",
+            "notesPlaceholder": "What do you want to remember about this place?",
+            "photosLabel": "Place Photos",
+            "addPhoto": "Add"
+        }
+    }
+}

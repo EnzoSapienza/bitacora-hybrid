@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, Dimensions, ScrollView, FlatList, NativeSynthet
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { useTranslation } from 'react-i18next';
 import { usePoiStore } from '@/hooks/firestore/usePoiStore';
 import { useAppStore } from '@/store/appStore';
 import { Typography } from '@/constants/typography';
 import { TravelStackParamList } from '@/navigation/tabs/TravelNavigator';
 import ImagePlaceholder from '@/components/common/ImagePlaceholder';
+import { formatDateLocalized, formatTimeLocalized } from '@/components/utils/date';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +21,7 @@ export default function PointOfInterestScreen() {
     const { pointId } = route.params;
 
     const colors = useAppStore((s) => s.themescolors);
+    const { i18n } = useTranslation();
 
     const point = usePoiStore((state) =>
         state.points.find((p) => p.id === pointId)
@@ -44,11 +47,6 @@ export default function PointOfInterestScreen() {
     }
 
     const tieneFotos = point.imageUrls && point.imageUrls.length > 0;
-
-    const filtrarHoraMilital = (timeStr: string) => {
-        if (!timeStr) return '';
-        return timeStr.replace(/[^0-9:]/g, '').trim();
-    };
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const scrollPosition = event.nativeEvent.contentOffset.x;
@@ -106,14 +104,14 @@ export default function PointOfInterestScreen() {
                     <View style={styles.infoItem}>
                         <MaterialIcons name="calendar-month" size={16} color={colors.grisMedio} style={styles.iconStyle} />
                         <Text style={[Typography.bodyMedium, { color: colors.grisOscuro }]}>
-                            {point.visitDate}
+                            {point.visitDate ? formatDateLocalized(point.visitDate, i18n.language) : ''}
                         </Text>
                     </View>
                     <Text style={[Typography.bodyMedium, { color: colors.grisMedio, marginHorizontal: 8 }]} />
                     <View style={styles.infoItem}>
                         <MaterialIcons name="access-time" size={16} color={colors.grisMedio} style={styles.iconStyle} />
                         <Text style={[Typography.bodyMedium, { color: colors.grisOscuro }]}>
-                            {filtrarHoraMilital(point.visitTime)} hs
+                            {point.visitDate ? formatTimeLocalized(point.visitDate, i18n.language) : ''}
                         </Text>
                     </View>
                 </View>

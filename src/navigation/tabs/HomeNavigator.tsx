@@ -1,6 +1,7 @@
 import TopBarMenu from "@/components/top_bar_menu/TopBarMenu";
 import HomeScreen from "@/screens/home/HomeScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useTranslation } from "react-i18next";
 
 export type HomeStackParamlist = {
     Mine: undefined;
@@ -11,13 +12,15 @@ export type HomeStackParamlist = {
 const Stack = createNativeStackNavigator<HomeStackParamlist>();
 
 export default function HomeNavigator() {
+    const { t } = useTranslation();
+
     return (
         <Stack.Navigator>
             <Stack.Screen
                 name="Mine"
                 component={HomeScreen}
                 options={{
-                    title: "Inicio",
+                    title: t("home.title"),
                     headerShown: true,
                     headerRight: () => <TopBarMenu />,
                 }}

@@ -3,6 +3,7 @@ import { ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } fro
 import { useNavigation } from '@react-navigation/native';
 import { parse, isValid, startOfDay, endOfDay } from 'date-fns';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTravelStore } from '../../../hooks/firestore/useTravelStore';
 import { useAuth } from '../../../hooks/useAuth'; 
 import { useAppStore } from '../../../store/appStore';
@@ -15,6 +16,7 @@ import { TravelFormContent } from './TravelFormContent';
 export default function TravelFormScreen() {
     const navigation = useNavigation();
     const colors = useAppStore((s) => s.themescolors);
+    const { t } = useTranslation();
     const { user } = useAuth();
     const { addTravel, loading: storeLoading, error } = useTravelStore();
     const { uploadImage, uploading } = useCloudinaryUpload();
@@ -35,7 +37,7 @@ export default function TravelFormScreen() {
     let dateError: string | null = null;
     if (isStartDateValid && isEndDateValid) {
         if (startOfDay(baseStartDate!) > endOfDay(baseEndDate!)) {
-            dateError = 'La fecha de inicio no puede ser posterior a la fecha de fin.';
+            dateError = t('travel.form.dateError');
         }
     }
 
@@ -60,7 +62,7 @@ export default function TravelFormScreen() {
             if (singleImage) {
                 remoteUrl = await uploadImage(singleImage);
                 if (!remoteUrl) {
-                    alert('No se pudo subir la imagen de portada. Por favor intentá de nuevo.');
+                    alert(t('travel.form.uploadError'));
                     return;
                 }
             }

@@ -6,8 +6,7 @@ interface Point {
     name: string;
     address: string;
     notes: string;
-    visitDate: string;
-    visitTime: string;
+    visitDate: Date | null;
     latitude: number;
     longitude: number;
     imageUrls: string[];

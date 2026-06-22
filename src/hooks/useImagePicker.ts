@@ -1,67 +1,114 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera } from 'expo-camera';
+import { useTranslation } from 'react-i18next';
+import * as ImageManipulator from 'expo-image-manipulator';
+
 
 export function useImagePicker(multiple = true) {
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
+    const { t } = useTranslation();
 
     const seleccionarDeGaleria = async () => {
-        const statusPermiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!statusPermiso.granted) {
-            Alert.alert('Permiso requerido', 'Se necesita acceso a la galería para añadir fotos.');
+        let permission = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+        if (!permission.granted) {
+            permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        }
+
+        if (!permission.granted) {
+            if (!permission.canAskAgain) {
+                Alert.alert(
+                    t('imagePicker.permissions.title'),
+                    t('imagePicker.permissions.galleryConfig'),
+                    [
+                        { text: t('common.cancel'), style: 'cancel' },
+                        { text: t('imagePicker.permissions.openSettings'), onPress: () => Linking.openSettings() },
+                    ]
+                );
+            } else {
+                Alert.alert(
+                    t('imagePicker.permissions.title'),
+                    t('imagePicker.permissions.galleryWarning')
+                );
+            }
             return;
         }
 
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsMultipleSelection: multiple,
-            allowsEditing: !multiple,
-            aspect: !multiple ? [16, 9] : undefined,
-            quality: 0.6,
-        });
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: 'images',
+                allowsMultipleSelection: multiple,
+                allowsEditing: !multiple,
+                aspect: !multiple ? [16, 9] : undefined,
+                quality: 0.6,
+            });
 
-        if (!result.canceled && result.assets) {
-            const uris = result.assets.map(asset => asset.uri);
-            if (multiple) {
-                setSelectedImages(prev => [...prev, ...uris]);
-            } else {
-                setSelectedImages([uris[0]]);
+            if (!result.canceled && result.assets) {
+                const uris = result.assets.map(a => a.uri);
+                setSelectedImages(prev => multiple ? [...prev, ...uris] : [uris[0]]);
             }
+        } catch {
+            Alert.alert(t('imagePicker.errors.title'), t('imagePicker.errors.gallery'));
         }
     };
 
     const tomarFoto = async () => {
-        const statusPermiso = await Camera.requestCameraPermissionsAsync();
-        if (!statusPermiso.granted) {
-            Alert.alert('Permiso requerido', 'Se necesita acceso a la cámara para tomar fotografías.');
+        let permission = await ImagePicker.getCameraPermissionsAsync();
+
+        if (!permission.granted) {
+            permission = await ImagePicker.requestCameraPermissionsAsync();
+        }
+
+        if (!permission.granted) {
+            if (!permission.canAskAgain) {
+                Alert.alert(
+                    t('imagePicker.permissions.title'),
+                    t('imagePicker.permissions.cameraConfig'),
+                    [
+                        { text: t('common.cancel'), style: 'cancel' },
+                        { text: t('imagePicker.permissions.openSettings'), onPress: () => Linking.openSettings() },
+                    ]
+                );
+            } else {
+                Alert.alert(
+                    t('imagePicker.permissions.title'),
+                    t('imagePicker.permissions.cameraWarning')
+                );
+            }
             return;
         }
 
-        const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: 'images',
-            allowsEditing: !multiple,
-            aspect: !multiple ? [16, 9] : undefined,
-            quality: 0.6,
-        });
+        try {
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: 'images',
+                allowsEditing: !multiple,
+                aspect: !multiple ? [16, 9] : undefined,
+                quality: 0.6,
+            });
 
-        if (!result.canceled && result.assets[0]?.uri) {
-            if (multiple) {
-                setSelectedImages(prev => [...prev, result.assets[0].uri]);
-            } else {
-                setSelectedImages([result.assets[0].uri]);
+            if (!result.canceled && result.assets[0]?.uri) {
+                const manipulado = await ImageManipulator.manipulateAsync(
+                    result.assets[0].uri,
+                    [{ resize: { width: 1280 } }],
+                    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+                );
+                setSelectedImages(prev => multiple ? [...prev, manipulado.uri] : [manipulado.uri]);
             }
+        } catch (error: any) {
+            console.log('Error cámara:', JSON.stringify(error));
+            Alert.alert(t('imagePicker.errors.title'), t('imagePicker.errors.camera'));
         }
     };
 
     const handlePickImages = () => {
         Alert.alert(
-            '¿Desde dónde quieres cargar la imagen?',
+            t('imagePicker.source.title'),
             '',
             [
-                { text: 'Galería de fotos', onPress: seleccionarDeGaleria },
-                { text: 'Tomar fotografía', onPress: tomarFoto },
-                { text: 'Cancelar', style: 'cancel' },
+                { text: t('imagePicker.source.gallery'), onPress: seleccionarDeGaleria },
+                { text: t('imagePicker.source.camera'), onPress: tomarFoto },
+                { text: t('common.cancel'), style: 'cancel' },
             ]
         );
     };
@@ -75,11 +122,5 @@ export function useImagePicker(multiple = true) {
         setSelectedImages(uri ? [uri] : []);
     };
 
-    return {
-        selectedImages,
-        singleImage,
-        setSingleImage,
-        handlePickImages,
-        handleRemovePhoto,
-    };
+    return { selectedImages, singleImage, setSingleImage, handlePickImages, handleRemovePhoto };
 }

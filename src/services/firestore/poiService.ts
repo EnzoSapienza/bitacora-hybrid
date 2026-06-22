@@ -27,14 +27,10 @@ export const poiService = {
                 lng = data.location.longitude;
             }
 
-            let fechaFormateada = "";
-            let horaFormateada = "";
-            if (data.visitDate && typeof data.visitDate.toDate === 'function') {
-                const dateObj = data.visitDate.toDate();
-                fechaFormateada = dateObj.toLocaleDateString();
-                horaFormateada = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-            } else if (data.visitDate) {
-                fechaFormateada = String(data.visitDate);
+            let visitDate: Date | null = null;
+
+            if (data.visitDate && typeof data.visitDate.toDate === "function") {
+                visitDate = data.visitDate.toDate();
             }
 
             return {
@@ -42,11 +38,10 @@ export const poiService = {
                 name: data.name || "",
                 address: data.address || "",
                 notes: data.notes || "",
-                visitDate: fechaFormateada,
-                visitTime: horaFormateada,
+                visitDate,
                 latitude: lat,
                 longitude: lng,
-                imageUrls: data.imageUrls || []
+                imageUrls: data.imageUrls || [],
             };
         });
     },

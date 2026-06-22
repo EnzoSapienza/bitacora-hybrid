@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 import { usePoiStore } from '@/hooks/firestore/usePoiStore';
 import { useTravelStore } from '@/hooks/firestore/useTravelStore';
@@ -23,6 +24,7 @@ export default function PointFormScreen() {
     const { travelId } = route.params;
 
     const colors = useAppStore((s) => s.themescolors);
+    const { t } = useTranslation();
     const { addPoint, loading: storeLoading, error } = usePoiStore();
     const { location, errorMsg, loading: locationLoading } = useLocation();
     const { uploadImage, uploading: uploadingImages } = useCloudinaryUpload();
@@ -45,7 +47,7 @@ export default function PointFormScreen() {
     const isFechaInvalida = !!(inicioViaje && finViaje && (visitDate < inicioViaje || visitDate > finViaje));
 
     const rangoTexto = inicioViaje && finViaje
-        ? `${inicioViaje.toLocaleDateString()} al ${finViaje.toLocaleDateString()}`
+        ? `${formatDate(inicioViaje)} ${t('travel.poiForm.dateRangeJoin')} ${formatDate(finViaje)}`
         : '';
 
     const isFormValid = name.trim().length > 0 && capturedCoords !== null && !isFechaInvalida;

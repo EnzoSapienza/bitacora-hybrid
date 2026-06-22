@@ -4,6 +4,7 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 import { useTravelStore } from '@/hooks/firestore/useTravelStore';
 import { usePoiStore } from '@/hooks/firestore/usePoiStore';
@@ -26,6 +27,7 @@ export default function TravelDetailScreen() {
     const { travelId } = route.params;
     
     const colors = useAppStore((s) => s.themescolors);
+    const { t } = useTranslation();
     
     const travel = useTravelStore((state) => 
         state.travels.find((t) => t.id === travelId)
@@ -52,22 +54,22 @@ export default function TravelDetailScreen() {
         return (
             <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
                 <Text style={[Typography.bodyLarge, { color: colors.grisOscuro }]}>
-                    No se encontró el viaje seleccionado.
+                    {t('travel.notFound')}
                 </Text>
             </View>
         );
     }
 
-    const statusViaje = getTravelStatus(travel.startDate, travel.endDate, colors);
+    const statusViaje = getTravelStatus(travel.startDate, travel.endDate, colors, t);
 
     const getVisibilityData = (vis: string) => {
         switch (vis?.toLowerCase()) {
             case 'public': 
-                return { icon: 'public' as const, label: 'PÚBLICO' };
+                return { icon: 'public' as const, label: t('travel.visibility.public') };
             case 'followers': 
-                return { icon: 'people' as const, label: 'SEGUIDORES' };
+                return { icon: 'people' as const, label: t('travel.visibility.followers') };
             default: 
-                return { icon: 'lock' as const, label: 'PRIVADO' };
+                return { icon: 'lock' as const, label: t('travel.visibility.private') };
         }
     };
 
@@ -82,7 +84,7 @@ export default function TravelDetailScreen() {
                 </Text>
                 <View style={styles.diasChip}>
                     <Text style={[Typography.labelSmall, { color: "#FFFFFF", fontWeight: '700', fontSize: 11 }]}>
-                        {travel.durationDays} {travel.durationDays === 1 ? 'DÍA' : 'DÍAS'}
+                        {travel.durationDays} {t('travel.days', { count: travel.durationDays })}
                     </Text>
                 </View>
             </View>
@@ -96,7 +98,7 @@ export default function TravelDetailScreen() {
                         </ScrollView>
                         <TouchableOpacity onPress={() => setDescripcionExpandida(false)} activeOpacity={0.7} style={styles.verMasBtn}>
                             <Text style={[Typography.labelSmall, { color: "#FFFFFF", fontWeight: '700' }]}>
-                                Ver menos
+                                {t('travel.seeLess')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -111,7 +113,7 @@ export default function TravelDetailScreen() {
                         {travel.description.length > 80 && (
                             <TouchableOpacity onPress={() => setDescripcionExpandida(true)} activeOpacity={0.7} style={styles.verMasBtn}>
                                 <Text style={[Typography.labelSmall, { color: "#FFFFFF", fontWeight: '700' }]}>
-                                    Ver más
+                                    {t('travel.seeMore')}
                                 </Text>
                             </TouchableOpacity>
                         )}
@@ -168,13 +170,13 @@ export default function TravelDetailScreen() {
                     <View style={[styles.badge, { backgroundColor: colors.blanco, borderColor: colors.grisClaro }]}>
                         <MaterialIcons name="place" size={16} color={colors.azulProfundo} />
                         <Text style={[Typography.labelSmall, { color: colors.grisOscuro, marginLeft: 4 }]}>
-                            {points.length} {points.length === 1 ? 'PUNTO' : 'PUNTOS'}
+                            {points.length} {t('travel.points', { count: points.length })}
                         </Text>
                     </View>
                 </View>
 
                 <Text style={[Typography.titleMedium, { color: colors.azulOscuro, fontWeight: '700', marginBottom: 12 }]}>
-                    Puntos de interés
+                    {t('travel.poi')}
                 </Text>
 
                 <View style={styles.poiSection}>
@@ -186,7 +188,7 @@ export default function TravelDetailScreen() {
                         <View style={[styles.placeholderCard, { backgroundColor: colors.blanco, borderColor: colors.grisClaro }]}>
                             <MaterialIcons name="alt-route" size={28} color={colors.grisMedio} />
                             <Text style={[Typography.bodyLarge, { color: colors.grisMedio, marginTop: 8, textAlign: 'center' }]}>
-                                Los puntos de interés se listarán en esta sección
+                                {t('travel.poiEmptyPlaceholder')}
                             </Text>
                         </View>
                     ) : (

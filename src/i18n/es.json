@@ -1,0 +1,106 @@
+{
+    "common": {
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "months": {
+            "jan": "ENE",
+            "feb": "FEB",
+            "mar": "MAR",
+            "apr": "ABR",
+            "may": "MAY",
+            "jun": "JUN",
+            "jul": "JUL",
+            "aug": "AGO",
+            "sep": "SEP",
+            "oct": "OCT",
+            "nov": "NOV",
+            "dec": "DIC"
+        }
+    },
+    "imagePicker": {
+        "permissions": {
+            "title": "Permiso requerido",
+            "galleryConfig": "Se necesita acceso a la galería. Por favor, habilítalo en la configuración de tu teléfono.",
+            "galleryWarning": "Se necesita acceso a la galería para añadir fotos.",
+            "cameraConfig": "Se necesita acceso a la cámara. Por favor, habilítalo en la configuración de tu teléfono.",
+            "cameraWarning": "Se necesita acceso a la cámara para tomar fotografías.",
+            "openSettings": "Ir a Configuración"
+        },
+        "source": {
+            "title": "¿Desde dónde quieres cargar la imagen?",
+            "gallery": "Galería de fotos",
+            "camera": "Tomar fotografía"
+        },
+        "errors": {
+            "title": "Error",
+            "gallery": "Hubo un problema al intentar abrir la galería.",
+            "camera": "Hubo un problema al intentar usar la cámara."
+        }
+    },
+    "home": {
+        "title": "Inicio"
+    },
+    "travel": {
+        "create": "Crear viaje",
+        "poiCount_one": "{{count}} punto de interés",
+        "poiCount_other": "{{count}} puntos de interés",
+        "points_one": "PUNTO",
+        "points_other": "PUNTOS",
+        "updatedPrefix": "ACT.",
+        "status": {
+            "planning": "PLANIFICANDO",
+            "ongoing": "EN CURSO",
+            "finished": "FINALIZADO"
+        },
+        "poi": "Puntos de interés",
+        "visibility": {
+            "public": "PÚBLICO",
+            "followers": "SEGUIDORES",
+            "private": "PRIVADO"
+        },
+        "days_one": "DÍA",
+        "days_other": "DÍAS",
+        "seeMore": "Ver más",
+        "seeLess": "Ver menos",
+        "poiEmptyPlaceholder": "Los puntos de interés se listarán en esta sección",
+        "notFound": "No se encontró el viaje seleccionado.",
+        "form": {
+            "changePhoto": "Cambiar Foto",
+            "addCoverPhoto": "Agregar foto de portada",
+            "nameLabel": "Nombre del Viaje",
+            "namePlaceholder": "Nombre",
+            "descriptionLabel": "Descripción",
+            "descriptionPlaceholder": "Descripción",
+            "startDateLabel": "Fecha Inicio",
+            "endDateLabel": "Fecha Fin",
+            "visibilityLabel": "Visibilidad del Viaje",
+            "visibilityOptions": {
+                "private": "Privado",
+                "followers": "Amigos",
+                "public": "Público"
+            },
+            "dateError": "La fecha de inicio no puede ser posterior a la fecha de fin.",
+            "uploadError": "No se pudo subir la imagen de portada. Por favor intentá de nuevo."
+        },
+        "poiForm": {
+            "nameLabel": "Nombre del lugar",
+            "namePlaceholder": "Ej. Hotel Central, Resto Bar...",
+            "addressLabel": "Dirección",
+            "addressPlaceholder": "Calle, número, ciudad...",
+            "locationLabel": "Ubicación Geográfica",
+            "myLocation": "Mi ubicación",
+            "searching": "Buscando...",
+            "viewOnMap": "Ver en el mapa",
+            "confirmLocationHint": "* Confirma la ubicación para guardar el punto de interés.",
+            "visitDateLabel": "Fecha de visita",
+            "visitTimeLabel": "Hora de visita",
+            "availableDatesPrefix": "Fechas disponibles del viaje:",
+            "dateRangeJoin": "al",
+            "dateOutOfRange": "La fecha seleccionada se encuentra fuera del rango de este viaje.",
+            "notesLabel": "Notas",
+            "notesPlaceholder": "¿Qué quieres recordar de este lugar?",
+            "photosLabel": "Fotos del Lugar",
+            "addPhoto": "Añadir"
+        }
+    }
+}
