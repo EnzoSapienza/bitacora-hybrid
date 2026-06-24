@@ -3,27 +3,55 @@
  */
 
 import { create } from 'zustand';
+import { userService } from '@/services/firestore/userService';
 
 interface User {
-  uid: string;
-  email: string;
+    uid: string;
+    email: string;
+    nombre?: string;
+    username?: string;
+    photoUrl?: string;
+    bio?: string;
+    followersCount?: number;
+    followingCount?: number;
 }
 
 interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  setUser: (user: User) => void;
-  clearUser: () => void;
-  setLoading: (loading: boolean) => void;
+    user: User | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    setUser: (user: User) => void;
+    clearUser: () => void;
+    setLoading: (loading: boolean) => void;
+    loadProfile: (uid: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
+    user: null,
+    isAuthenticated: false,
+    isLoading: true,
 
-  setUser: (user) => set({ user, isAuthenticated: true, isLoading: false }),
-  clearUser: () => set({ user: null, isAuthenticated: false, isLoading: false }),
-  setLoading: (isLoading) => set({ isLoading }),
+    setUser: (user) => set({ user, isAuthenticated: true, isLoading: false }),
+    clearUser: () => set({ user: null, isAuthenticated: false, isLoading: false }),
+    setLoading: (isLoading) => set({ isLoading }),
+
+    loadProfile: async (uid) => {
+        try {
+            const data = await userService.getPublicProfile(uid) as any;
+            if (!data) return;
+            set((state) => ({
+                user: {
+                    ...state.user!,
+                    nombre: data.nombre,
+                    username: data.username,
+                    photoUrl: data.photoUrl,
+                    bio: data.bio,
+                    followersCount: data.followersCount ?? 0,
+                    followingCount: data.followingCount ?? 0,
+                }
+            }));
+        } catch (e) {
+            console.error('Error cargando perfil:', e);
+        }
+    }
 }));

@@ -6,16 +6,20 @@ import { useTravelStore } from "@/hooks/firestore/useTravelStore";
 import { useAuthStore } from "@/store/authStore";
 import { useAppStore } from "@/store/appStore";
 import AddButton from "@/components/add_button/AddButton";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
 
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
-    const user = useAuthStore((state) => state.user);
+    const { user, loadProfile } = useAuthStore();
     const colors = useAppStore((s) => s.themescolors);
     const { travels, loading, fetchTravels } = useTravelStore();
 
     useEffect(() => {
         if (user?.uid) {
             fetchTravels(user.uid);
+            if (!user.nombre) {
+                loadProfile(user.uid);
+            }
         }
     }, [user?.uid]);
 
@@ -29,29 +33,33 @@ export default function HomeScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.grisFondoApp }]}>
+            <ProfileHeader
+                displayName={user?.nombre}
+                username={user?.username}
+                bio={user?.bio}
+                photoUrl={user?.photoUrl}
+                travelCount={travels.length}
+                followersCount={user?.followersCount}
+                followingCount={user?.followingCount}
+                onEditClick={() => navigation.navigate('EditProfile')}
+            />
             <TravelList
                 travels={travels}
-                onPressItem={(item) => 
+                onPressItem={(item) =>
                     navigation.navigate("Travel", {
                         screen: "TravelDetails",
                         params: { travelId: item.id }
                     })
                 }
-            /> 
-            <AddButton 
-                onPress={() => navigation.navigate("Travel", { screen: "TravelForm" })} 
+            />
+            <AddButton
+                onPress={() => navigation.navigate("Travel", { screen: "TravelForm" })}
             />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1 
-    },
-    center: { 
-        flex: 1, 
-        justifyContent: "center", 
-        alignItems: "center" 
-    },
+    container: { flex: 1 },
+    center: { flex: 1, justifyContent: "center", alignItems: "center" },
 });

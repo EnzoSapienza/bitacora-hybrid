@@ -17,6 +17,15 @@
             "dec": "DIC"
         }
     },
+    "profile": {
+        "loading": "Caricamento...",
+        "defaultUsername": "utente",
+        "trips": "Viaggi",
+        "followers": "Follower",
+        "following": "Seguiti",
+        "follow": "Segui",
+        "adventures": "Avventure"
+    },
     "imagePicker": {
         "permissions": {
             "title": "Autorizzazione richiesta",
@@ -76,7 +85,7 @@
             "visibilityLabel": "Visibilità del Viaggio",
             "visibilityOptions": {
                 "private": "Privato",
-                "followers": "Amici",
+                "followers": "Follower",
                 "public": "Pubblico"
             },
             "dateError": "La data di inizio non può essere posteriore alla data di fine.",
@@ -102,5 +111,31 @@
             "photosLabel": "Foto del Luogo",
             "addPhoto": "Aggiungi"
         }
+    },
+    "explore": {
+        "title": "Esplora",
+        "searchPlaceholder": "Cerca viaggi...",
+        "filters": {
+            "short": "Breve (1-3g)",
+            "medium": "Medio (4-7g)",
+            "long": "Lungo (+7g)",
+            "detailed": "Dettagliati (+5 punti)",
+            "monthYear": "Mese / Anno",
+            "clearMonth": "Rimuovi filtro mese"
+        },
+        "sections": {
+            "searchResults": "Risultati di ricerca",
+            "noResults": "Nessun viaggio trovato con questi filtri",
+            "discover": "Scopri nuovi viaggi",
+            "following": "Dalle persone che segui",
+            "seeAll": "Vedi tutti"
+        },
+        "nav": {
+            "travelDetail": "Dettaglio del Viaggio",
+            "profile": "Profilo del Viaggiatore",
+            "poi": "Punto di Interesse",
+            "allTravels": "Scopri Viaggi"
+        },
+        "allTravelsEmpty": "Nessun nuovo viaggio da scoprire per ora."
     }
 }

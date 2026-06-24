@@ -15,7 +15,7 @@ const IOS_CLIENT_ID = '1901113908-er8u2hej1skg3btt3mkb29avg7tehdei.apps.googleus
 const WEB_CLIENT_ID = '1901113908-r6sliik0sosrd0a7p9n7v1o11bih36pm.apps.googleusercontent.com';
 
 export function useAuth() {
-    const { user, isAuthenticated, setUser, clearUser } = useAuthStore();
+    const { user, isAuthenticated, setUser, clearUser, loadProfile } = useAuthStore();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -31,6 +31,7 @@ export function useAuth() {
         try {
             const result = await authService.signIn(email, password);
             setUser({ uid: result.user.uid, email: result.user.email! });
+            await loadProfile(result.user.uid);
         } catch (e: any) {
             setError(mapFirebaseError(e.code));
         } finally {
@@ -48,6 +49,7 @@ export function useAuth() {
                 if (!idToken) throw new Error('No se obtuvo el token de Google.');
                 const fbResult = await authService.signInWithGoogle(idToken);
                 setUser({ uid: fbResult.user.uid, email: fbResult.user.email! });
+                await loadProfile(fbResult.user.uid);
             }
         } catch (e: any) {
             setError(e.message ?? 'Error al iniciar sesión con Google.');

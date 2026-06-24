@@ -11,7 +11,7 @@ export type AppTabParamList = {
     Travel: { travelId: string };
 };
 
-const Stack = createNativeStackNavigator<AppTabParamList>();
+const Stack = createNativeStackNavigator<{ Tabs: undefined }>();
 
 export default function AppNavigator() {
     return (
@@ -19,11 +19,6 @@ export default function AppNavigator() {
             <Stack.Screen
                 name="Tabs"
                 component={AppTabs}
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="Travel"
-                component={TravelNavigator}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>

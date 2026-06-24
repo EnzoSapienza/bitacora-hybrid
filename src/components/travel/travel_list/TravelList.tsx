@@ -1,17 +1,27 @@
-import { View, StyleSheet, TouchableOpacity, FlatList } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { View, StyleSheet, FlatList } from "react-native";
 import Travel from "@/types/models/travel";
 import TravelCard from "../travel_card/TravelCard";
 
 type Props = {
     travels: Travel[];
     onPressItem: (travel: Travel) => void;
+    scrollEnabled?: boolean;
+    noPadding?: boolean;
+    onEndReached?: () => void;
+    onEndReachedThreshold?: number;
+    ListFooterComponent?: React.ReactElement | null;
 };
 
-export default function TravelList({ travels, onPressItem }: Props) {
+export default function TravelList({
+    travels,
+    onPressItem,
+    scrollEnabled = true,
+    noPadding = false,
+    onEndReached,
+    onEndReachedThreshold = 0.4,
+    ListFooterComponent,
+}: Props) {
     return (
-        // TODO: mejorar la lista de viajes
         <View style={styles.container}>
             <FlatList
                 data={travels}
@@ -22,12 +32,28 @@ export default function TravelList({ travels, onPressItem }: Props) {
                         onPress={() => onPressItem(item)}
                     />
                 )}
-                contentContainerStyle={{ padding: 16 }}
+                contentContainerStyle={[
+                    styles.content,
+                    noPadding && styles.noHorizontalPadding,
+                ]}
+                scrollEnabled={scrollEnabled}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={onEndReachedThreshold}
+                ListFooterComponent={ListFooterComponent}
             />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
+    container: {
+        flex: 1,
+    },
+    content: {
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+    },
+    noHorizontalPadding: {
+        paddingHorizontal: 0,
+    },
 });

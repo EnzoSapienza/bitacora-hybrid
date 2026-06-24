@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { collection, addDoc, getDocs, doc, updateDoc, increment, serverTimestamp, GeoPoint } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, getDoc, updateDoc, increment, serverTimestamp, GeoPoint, query, orderBy } from "firebase/firestore";
 import { parseDateTimeToDate } from "../../components/utils/date";
 
 interface PointData {
@@ -16,7 +16,9 @@ interface PointData {
 export const poiService = {
     getAllByTrip: async (tripId: string) => {
         const pointsRef = collection(db, "trips", tripId, "pointsOfInterest");
-        const snap = await getDocs(pointsRef);
+        const q = query(pointsRef, orderBy("visitDate", "asc"));
+        const snap = await getDocs(q);
+
         return snap.docs.map((doc) => {
             const data = doc.data();
 
@@ -44,6 +46,37 @@ export const poiService = {
                 imageUrls: data.imageUrls || [],
             };
         });
+    },
+
+    getPointById: async (tripId: string, pointId: string) => { 
+        const pointRef = doc(db, "trips", tripId, "pointsOfInterest", pointId);
+        const snap = await getDoc(pointRef);
+
+        if (!snap.exists()) return null;
+
+        const data = snap.data();
+        let lat = 0;
+        let lng = 0;
+        if (data.location) {
+            lat = data.location.latitude;
+            lng = data.location.longitude;
+        }
+
+        let visitDate: Date | null = null;
+        if (data.visitDate && typeof data.visitDate.toDate === "function") {
+            visitDate = data.visitDate.toDate();
+        }
+
+        return {
+            id: snap.id,
+            name: data.name || "",
+            address: data.address || "",
+            notes: data.notes || "",
+            visitDate,
+            latitude: lat,
+            longitude: lng,
+            imageUrls: data.imageUrls || [],
+        };
     },
 
     savePoint: async (tripId: string, pointData: PointData): Promise<string> => {

@@ -17,6 +17,15 @@
             "dec": "DEC"
         }
     },
+    "profile": {
+        "loading": "Loading...",
+        "defaultUsername": "user",
+        "trips": "Trips",
+        "followers": "Followers",
+        "following": "Following",
+        "follow": "Follow",
+        "adventures": "Adventures"
+    },
     "imagePicker": {
         "permissions": {
             "title": "Permission required",
@@ -76,7 +85,7 @@
             "visibilityLabel": "Trip Visibility",
             "visibilityOptions": {
                 "private": "Private",
-                "followers": "Friends",
+                "followers": "Followers",
                 "public": "Public"
             },
             "dateError": "The start date cannot be later than the end date.",
@@ -102,5 +111,24 @@
             "photosLabel": "Place Photos",
             "addPhoto": "Add"
         }
+    },
+    "explore": {
+        "searchPlaceholder": "Search trips...",
+        "filters": {
+            "short": "Short (1-3d)",
+            "medium": "Medium (4-7d)",
+            "long": "Long (+7d)",
+            "detailed": "Detailed (+5 pts)",
+            "monthYear": "Month / Year",
+            "clearMonth": "Clear month filter"
+        },
+        "sections": {
+            "searchResults": "Search results",
+            "noResults": "No trips found with those filters",
+            "discover": "Discover new trips",
+            "following": "From people you follow",
+            "seeAll": "See all"
+        },
+        "allTravelsEmpty": "No more new trips to discover for now."
     }
 }

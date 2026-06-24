@@ -1,14 +1,15 @@
 import TopBarMenu from "@/components/top_bar_menu/TopBarMenu";
 import HomeScreen from "@/screens/home/HomeScreen";
+import TravelNavigator from "./TravelNavigator";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useTranslation } from "react-i18next";
 
 export type HomeStackParamlist = {
     Mine: undefined;
     Shared: undefined;
+    Travel: { travelId: string };
 };
 
-// TODO: Instalar @react-navigation/material-top-tabs con npx expo install
 const Stack = createNativeStackNavigator<HomeStackParamlist>();
 
 export default function HomeNavigator() {
@@ -24,10 +25,12 @@ export default function HomeNavigator() {
                     headerShown: true,
                     headerRight: () => <TopBarMenu />,
                 }}
-            ></Stack.Screen>
-            {
-                // TODO: La pantalla de viajes compartidos
-            }
+            />
+            <Stack.Screen
+                name="Travel"
+                component={TravelNavigator}
+                options={{ headerShown: false }}
+            />
         </Stack.Navigator>
     );
 }
