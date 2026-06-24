@@ -1,5 +1,5 @@
 /**
- * Encapsula todas operaciones de autenticación
+ * Encapsula todas las operaciones de autenticación con Firebase
  */
 
 import {
@@ -7,10 +7,11 @@ import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
-    type User,
     GoogleAuthProvider,
-    signInWithCredential
-} from "firebase/auth";
+    signInWithCredential,
+    type User,
+    type Unsubscribe,
+} from 'firebase/auth';
 import { auth } from './firebase';
 
 export const authService = {
@@ -25,10 +26,8 @@ export const authService = {
         return signInWithCredential(auth, credential);
     },
 
+    signOut: () => signOut(auth),
 
-    signOut: () =>
-        signOut(auth),
-
-    subscribe: (callback: (user: User | null) => void) =>
+    subscribe: (callback: (user: User | null) => void): Unsubscribe =>
         onAuthStateChanged(auth, callback),
-}
+};

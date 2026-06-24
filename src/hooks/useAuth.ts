@@ -1,37 +1,40 @@
 /**
- * Comunica las screen con authStore y authService
+ * Comunica las screens con authStore y authService
  */
-
-import { useState } from 'react';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
+import { useState, useEffect } from 'react';
+import { GoogleSignin, isErrorWithCode, statusCodes } from '@react-native-google-signin/google-signin';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/authService';
 
-WebBrowser.maybeCompleteAuthSession();
-
-const ANDROID_CLIENT_ID = '1901113908-6t60jns807ic20vtrv0q0m1tk19uq8r6.apps.googleusercontent.com';
 const IOS_CLIENT_ID = '1901113908-er8u2hej1skg3btt3mkb29avg7tehdei.apps.googleusercontent.com';
 const WEB_CLIENT_ID = '1901113908-r6sliik0sosrd0a7p9n7v1o11bih36pm.apps.googleusercontent.com';
 
-export function useAuth() {
-    const { user, isAuthenticated, setUser, clearUser, loadProfile } = useAuthStore();
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+GoogleSignin.configure({
+    webClientId: WEB_CLIENT_ID,
+    iosClientId: IOS_CLIENT_ID,
+});
 
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        androidClientId: ANDROID_CLIENT_ID,
-        iosClientId: IOS_CLIENT_ID,
-        webClientId: WEB_CLIENT_ID,
-    });
+export function useAuth() {
+    const { user, isAuthenticated, setUser, clearUser, setLoading, isLoading, loadProfile } = useAuthStore();
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const unsubscribe = authService.subscribe((firebaseUser) => {
+            if (firebaseUser) {
+                setUser({ uid: firebaseUser.uid, email: firebaseUser.email! });
+                loadProfile(firebaseUser.uid);
+            } else {
+                clearUser();
+            }
+        });
+        return unsubscribe;
+    }, []);
 
     const login = async (email: string, password: string) => {
         setError(null);
         setLoading(true);
         try {
-            const result = await authService.signIn(email, password);
-            setUser({ uid: result.user.uid, email: result.user.email! });
-            await loadProfile(result.user.uid);
+            await authService.signIn(email, password);
         } catch (e: any) {
             setError(mapFirebaseError(e.code));
         } finally {
@@ -43,16 +46,34 @@ export function useAuth() {
         setError(null);
         setLoading(true);
         try {
-            const result = await promptAsync();
-            if (result?.type === 'success') {
-                const idToken = result.authentication?.idToken;
-                if (!idToken) throw new Error('No se obtuvo el token de Google.');
-                const fbResult = await authService.signInWithGoogle(idToken);
-                setUser({ uid: fbResult.user.uid, email: fbResult.user.email! });
-                await loadProfile(fbResult.user.uid);
+            await GoogleSignin.hasPlayServices();
+            const response = await GoogleSignin.signIn();
+
+            const idToken = response.data?.idToken;
+            if (!idToken) {
+                setError('No se obtuvo el token de Google.');
+                return;
             }
+
+            await authService.signInWithGoogle(idToken);
         } catch (e: any) {
-            setError(e.message ?? 'Error al iniciar sesión con Google.');
+            if (isErrorWithCode(e)) {
+                console.error(e);
+                switch (e.code) {
+                    case statusCodes.SIGN_IN_CANCELLED:
+                        break;
+                    case statusCodes.IN_PROGRESS:
+                        setError('Ya hay un inicio de sesión en curso.');
+                        break;
+                    case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+                        setError('Google Play Services no está disponible.');
+                        break;
+                    default:
+                        setError('Error al iniciar sesión con Google.');
+                }
+            } else {
+                setError(e.message ?? 'Error al iniciar sesión con Google.');
+            }
         } finally {
             setLoading(false);
         }
@@ -60,10 +81,13 @@ export function useAuth() {
 
     const logout = async () => {
         await authService.signOut();
-        clearUser();
+        try {
+            await GoogleSignin.signOut();
+        } catch {
+        }
     };
 
-    return { user, isAuthenticated, loading, error, login, loginWithGoogle, logout };
+    return { user, isAuthenticated, loading: isLoading, error, login, loginWithGoogle, logout };
 }
 
 function mapFirebaseError(code: string): string {

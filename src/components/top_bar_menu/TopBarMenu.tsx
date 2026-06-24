@@ -20,10 +20,18 @@ export default function TopBarMenu() {
                 />
             }
         >
-            <Menu.Item onPress={() => console.log("Perfil")} title="Perfil" />
+            <Menu.Item
+                onPress={() => {
+                    console.log("Perfil");
+                    setVisible(false);
+                }}
+                title="Perfil"
+            />
             <Menu.Item
                 onPress={() => {
                     console.log("Cerrando sesión");
+                    setVisible(false);
+
                     confirm({
                         title: "Cerrar sesión",
                         message: "¿Seguro que quieres salir?",
