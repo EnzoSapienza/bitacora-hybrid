@@ -18,11 +18,11 @@ async function getAddressFromCoords(
 }
 
 function addressToString(lugar: Location.LocationGeocodedAddress, lat: number, lng: number): string {
-    const calle = lugar.street || '';
-    const numero = lugar.name || '';
-    const ciudad = lugar.city || lugar.subregion || '';
+    const calle = lugar.street || "";
+    const numero = lugar.name || "";
+    const ciudad = lugar.city || lugar.subregion || "";
     return calle
-        ? `${calle} ${numero}${ciudad ? `, ${ciudad}` : ''}`.trim()
+        ? `${calle} ${numero}${ciudad ? `, ${ciudad}` : ""}`.trim()
         : lugar.formattedAddress || `${lat}, ${lng}`;
 }
 
@@ -32,65 +32,82 @@ export default function useLocation() {
     const [loading, setLoading] = useState(true);
 
     const lastGeocodedRef = useRef<{ latitude: number; longitude: number } | null>(null);
+    const subscriptionRef = useRef<Location.LocationSubscription | null>(null);
+    const isMountedRef = useRef(true);
+
+    const startWatching = useCallback(async () => {
+
+        subscriptionRef.current?.remove();
+        subscriptionRef.current = null;
+
+        return Location.watchPositionAsync(
+            { accuracy: Location.Accuracy.Balanced, distanceInterval: 20 },
+            async (pos) => {
+                if (!isMountedRef.current) return;
+                const { latitude: lat, longitude: lon } = pos.coords;
+                const last = lastGeocodedRef.current;
+                const shouldGeocode =
+                    !last ||
+                    Math.abs(lat - last.latitude) > GEOCODE_THRESHOLD ||
+                    Math.abs(lon - last.longitude) > GEOCODE_THRESHOLD;
+
+                if (shouldGeocode) {
+                    try {
+                        const newAddressObj = await getAddressFromCoords(lat, lon);
+                        if (!isMountedRef.current) return;
+                        lastGeocodedRef.current = { latitude: lat, longitude: lon };
+                        setLocation({ latitude: lat, longitude: lon, address: addressToString(newAddressObj, lat, lon) });
+                    } catch (err) {
+                        if (!isMountedRef.current) return;
+                        setLocation((prev) => (prev ? { ...prev, latitude: lat, longitude: lon } : null));
+                    }
+                } else {
+                    setLocation((prev) => (prev ? { ...prev, latitude: lat, longitude: lon } : null));
+                }
+            }
+        );
+    }, []);
 
     const requestPermissionAndGetLocation = useCallback(async () => {
         setLoading(true);
         setErrorMsg(null);
-
         try {
             const { status } = await Location.requestForegroundPermissionsAsync();
-
             if (status !== Location.PermissionStatus.GRANTED) {
-                setErrorMsg("Permiso de ubicación denegado");
+                if (isMountedRef.current) {
+                    setErrorMsg("Permiso de ubicación denegado");
+                    setLoading(false);
+                }
                 return;
             }
 
             const current = await Location.getCurrentPositionAsync({});
             const { latitude, longitude } = current.coords;
-
             const addressObj = await getAddressFromCoords(latitude, longitude);
-            lastGeocodedRef.current = { latitude, longitude };
 
+            if (!isMountedRef.current) return;
+
+            lastGeocodedRef.current = { latitude, longitude };
             setLocation({ latitude, longitude, address: addressToString(addressObj, latitude, longitude) });
             setLoading(false);
 
-            const subscription = await Location.watchPositionAsync(
-                { accuracy: Location.Accuracy.Balanced, distanceInterval: 20 },
-                async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
-                    const last = lastGeocodedRef.current;
-
-                    const shouldGeocode =
-                        !last ||
-                        Math.abs(lat - last.latitude) > GEOCODE_THRESHOLD ||
-                        Math.abs(lon - last.longitude) > GEOCODE_THRESHOLD;
-
-                    if (shouldGeocode) {
-                        try {
-                            const newAddressObj = await getAddressFromCoords(lat, lon);
-                            lastGeocodedRef.current = { latitude: lat, longitude: lon };
-                            setLocation({ latitude: lat, longitude: lon, address: addressToString(newAddressObj, lat, lon) });
-                        } catch {
-                            setLocation((prev) => prev ? { ...prev, latitude: lat, longitude: lon } : null);
-                        }
-                    } else {
-                        setLocation((prev) => prev ? { ...prev, latitude: lat, longitude: lon } : null);
-                    }
-                }
-            );
-
-            return () => subscription.remove();
-
-        } catch {
-            setErrorMsg("Error al obtener la ubicación");
-            setLoading(false);
+            subscriptionRef.current = await startWatching();
+        } catch (err) {
+            if (isMountedRef.current) {
+                setErrorMsg("Error al obtener la ubicación");
+                setLoading(false);
+            }
         }
-    }, []);
+    }, [startWatching]);
 
     useEffect(() => {
-        let cleanup: (() => void) | undefined;
-        requestPermissionAndGetLocation().then((fn) => { cleanup = fn; });
-        return () => cleanup?.();
+        isMountedRef.current = true;
+        requestPermissionAndGetLocation();
+        return () => {
+            isMountedRef.current = false;
+            subscriptionRef.current?.remove();
+            subscriptionRef.current = null;
+        };
     }, [requestPermissionAndGetLocation]);
 
     return { location, errorMsg, loading, refetch: requestPermissionAndGetLocation };

@@ -2,16 +2,17 @@
  * Stack de uso genérico
  */
 
-import TravelNavigator from "./tabs/TravelNavigator";
+import TravelNavigator, { TravelStackParamList } from "./tabs/TravelNavigator";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AppTabs from "./AppTabs";
+import { NavigatorScreenParams } from "@react-navigation/native";
 
-export type AppTabParamList = {
+export type AppStackParamList = {
     Tabs: undefined;
-    Travel: { travelId: string };
+    Travel: NavigatorScreenParams<TravelStackParamList>;
 };
 
-const Stack = createNativeStackNavigator<{ Tabs: undefined }>();
+const Stack = createNativeStackNavigator<AppStackParamList>();
 
 export default function AppNavigator() {
     return (
@@ -19,6 +20,11 @@ export default function AppNavigator() {
             <Stack.Screen
                 name="Tabs"
                 component={AppTabs}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Travel"
+                component={TravelNavigator}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>
