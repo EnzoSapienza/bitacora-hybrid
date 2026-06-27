@@ -1,4 +1,5 @@
 import MapMarker from "@/types/models/MapMarker";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View, Text } from "react-native";
 import { Button, Surface } from "react-native-paper";
 
@@ -15,11 +16,13 @@ export default function MarkerCard({
     moreText,
     onMore,
 }: Props) {
+    const { t } = useTranslation();
+
     return (
         <Surface style={styles.container} elevation={4}>
             <View style={styles.textContainer}>
                 <Text style={styles.title} numberOfLines={2}>
-                    {mapMarker.name ?? "Lugar"}
+                    {mapMarker.name ?? t("map.name_placeholder")}
                 </Text>
                 <Text style={styles.content}>{mapMarker.address ?? "A"}</Text>
             </View>
@@ -30,7 +33,7 @@ export default function MarkerCard({
                     onPress={onCancel}
                     compact={true}
                 >
-                    Cancelar
+                    {t("common.cancel")}
                 </Button>
                 {moreText && (
                     <Button

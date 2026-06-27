@@ -10,6 +10,9 @@ import {
 import MapMarker from "@/types/models/MapMarker";
 import MarkerCard from "./MarkerCard";
 import { reverseGeocode } from "@/components/utils/geocoding";
+import { useTranslation } from "react-i18next";
+import { Pressable } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 type Props = {
     initialCenter?: LngLat;
@@ -21,6 +24,10 @@ type Props = {
     userLocation?: LngLat | null;
     showUserLocation?: boolean;
     followUserLocation?: boolean;
+    onViewportChange?: (
+        center: { lat: number; lng: number },
+        bounds: { north: number; south: number; east: number; west: number },
+    ) => void;
 };
 
 const OPENFREEMAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
@@ -37,9 +44,15 @@ export default function MapaOSM({
     userLocation,
     showUserLocation = false,
     followUserLocation = false,
+    onViewportChange,
 }: Props) {
     const cameraRef = useRef<CameraRef>(null);
     const centeredRef = useRef(false);
+    const viewportTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+        null,
+    );
+
+    const { t } = useTranslation();
 
     const [pickedMarker, setPickedMarker] = useState<MapMarker | null>(null);
     const pinRequestRef = useRef(0);
@@ -62,13 +75,12 @@ export default function MapaOSM({
     }
 
     function createTemporaryPin(lngLat: LngLat) {
-        console.log("createTemporaryPin");
         const requestId = ++pinRequestRef.current;
 
         setPickedMarker({
             id: NEW_PIN_ID,
             coords: lngLat,
-            name: "Buscando dirección…",
+            name: t("map.searching_address"),
             address: "",
         } as MapMarker);
 
@@ -87,9 +99,8 @@ export default function MapaOSM({
                     current && current.id === NEW_PIN_ID
                         ? ({
                               ...current,
-                              name: "Ubicación seleccionada",
-                              address:
-                                  "No se pudo obtener la dirección del lugar",
+                              name: t("map.name_placeholder"),
+                              address: t("map.address_placeholder"),
                           } as MapMarker)
                         : current,
                 );
@@ -107,12 +118,46 @@ export default function MapaOSM({
         }
     }
 
+    useEffect(() => {
+        return () => {
+            if (viewportTimeoutRef.current)
+                clearTimeout(viewportTimeoutRef.current);
+        };
+    }, []);
+
+    function handleRegionDidChange(event: any) {
+        if (!onViewportChange) return;
+        if (viewportTimeoutRef.current)
+            clearTimeout(viewportTimeoutRef.current);
+
+        viewportTimeoutRef.current = setTimeout(() => {
+            const visibleBounds = event?.properties?.visibleBounds;
+            if (!visibleBounds) return;
+
+            const [[east, north], [west, south]] = visibleBounds;
+            onViewportChange(
+                { lat: (north + south) / 2, lng: (east + west) / 2 },
+                { north, south, east, west },
+            );
+        }, 400);
+    }
+
+    function centerOnUser() {
+        if (!userLocation) return;
+
+        cameraRef.current?.flyTo({
+            center: userLocation,
+            zoom: initialZoom,
+        });
+    }
+
     return (
         <View style={styles.container}>
             <Map
                 style={styles.map}
                 mapStyle={OPENFREEMAP_STYLE}
                 onPress={clickable ? handleMapPress : undefined}
+                onRegionDidChange={handleRegionDidChange}
             >
                 <Camera
                     ref={cameraRef}
@@ -143,11 +188,25 @@ export default function MapaOSM({
                     </Marker>
                 )}
             </Map>
+            {showUserLocation && userLocation && (
+                <Pressable
+                    style={styles.centerButton}
+                    onPress={centerOnUser}
+                    hitSlop={8}
+                >
+                    <MaterialIcons
+                        name="my-location"
+                        size={24}
+                        color="#1a73e8"
+                    />
+                </Pressable>
+            )}
+
             {pickedMarker !== null && (
                 <MarkerCard
                     mapMarker={pickedMarker}
                     onCancel={() => setPickedMarker(null)}
-                    moreText="Ver más"
+                    moreText={t("common.details")}
                     onMore={handleAcceptMore}
                 />
             )}
@@ -181,5 +240,26 @@ const styles = StyleSheet.create({
         backgroundColor: "#1a73e8",
         borderWidth: 2,
         borderColor: "#fff",
+    },
+    centerButton: {
+        position: "absolute",
+        right: 16,
+        bottom: 24,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: "#fff",
+        justifyContent: "center",
+        alignItems: "center",
+
+        elevation: 4,
+
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
     },
 });

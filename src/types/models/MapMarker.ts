@@ -6,4 +6,5 @@ export default interface MapMarker {
     coords: LngLat;
     name?: string;
     address?: string;
+    tripId?: string;
 }

@@ -1,5 +1,12 @@
 import { db } from "../firebase";
-import { collection, addDoc, getDocs, doc, getDoc, updateDoc, increment, serverTimestamp, GeoPoint, query, orderBy } from "firebase/firestore";
+import {
+    collection, collectionGroup,
+    addDoc, getDocs, doc, getDoc, updateDoc,
+    query, orderBy, where, limit as fsLimit,
+    increment,
+    serverTimestamp,
+    GeoPoint,
+} from "firebase/firestore";
 import { parseDateTimeToDate } from "../../components/utils/date";
 
 interface PointData {
@@ -12,6 +19,8 @@ interface PointData {
     longitude: number;
     imageUrls: string[];
 }
+
+const RAW_FETCH_LIMIT = 200;
 
 export const poiService = {
     getAllByTrip: async (tripId: string) => {
@@ -48,7 +57,7 @@ export const poiService = {
         });
     },
 
-    getPointById: async (tripId: string, pointId: string) => { 
+    getPointById: async (tripId: string, pointId: string) => {
         const pointRef = doc(db, "trips", tripId, "pointsOfInterest", pointId);
         const snap = await getDoc(pointRef);
 
@@ -103,5 +112,38 @@ export const poiService = {
         });
 
         return docRef.id;
+    },
+
+    getAuthorizedNearbyPoints: async (uid: string, range: [string, string]) => {
+        const snap = await getDocs(
+            query(
+                collectionGroup(db, "pointsOfInterest"),
+                where("authorizedUsers", "array-contains", uid),
+                where("geohash", ">=", range[0]),
+                where("geohash", "<=", range[1]),
+                fsLimit(RAW_FETCH_LIMIT)
+            )
+        );
+
+        return snap.docs.map((d) => {
+            const data = d.data();
+
+            return {
+                id: d.id,
+                tripId: d.ref.parent.parent?.id ?? null,
+
+                lat: data.location.latitude,
+                lng: data.location.longitude,
+
+                name: data.name,
+                address: data.address,
+                notes: data.notes,
+                imageUrls: data.imageUrls,
+                visitDate: data.visitDate,
+                authorizedUsers: data.authorizedUsers,
+                geohash: data.geohash,
+            };
+        });
     }
+
 };

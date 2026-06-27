@@ -2,6 +2,7 @@
     "common": {
         "save": "Save",
         "cancel": "Cancel",
+        "details": "Details",
         "months": {
             "jan": "JAN",
             "feb": "FEB",
@@ -130,5 +131,11 @@
             "seeAll": "See all"
         },
         "allTravelsEmpty": "No more new trips to discover for now."
+    },
+    "map" : {
+        "title": "Map",
+        "searching_address": "Searching Address...",
+        "name_placeholder": "Selected location",
+        "address_placeholder": "The address of the venue could not be obtained"
     }
 }

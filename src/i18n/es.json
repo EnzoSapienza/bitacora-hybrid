@@ -2,6 +2,7 @@
     "common": {
         "save": "Guardar",
         "cancel": "Cancelar",
+        "details": "Detalles",
         "months": {
             "jan": "ENE",
             "feb": "FEB",
@@ -137,5 +138,11 @@
             "allTravels": "Descubrir Viajes"
         },
         "allTravelsEmpty": "No hay más viajes nuevos para descubrir por ahora."
+    },
+    "map" : {
+        "title": "Mapa",
+        "searching_address": "Buscando dirección…",
+        "name_placeholder": "Ubicación seleccionada",
+        "address_placeholder": "No se pudo obtener la dirección del lugar"
     }
 }
