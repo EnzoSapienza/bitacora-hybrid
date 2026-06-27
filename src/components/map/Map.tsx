@@ -28,6 +28,7 @@ type Props = {
         center: { lat: number; lng: number },
         bounds: { north: number; south: number; east: number; west: number },
     ) => void;
+    interactive?: boolean;
 };
 
 const OPENFREEMAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
@@ -45,6 +46,7 @@ export default function MapaOSM({
     showUserLocation = false,
     followUserLocation = false,
     onViewportChange,
+    interactive = true,
 }: Props) {
     const cameraRef = useRef<CameraRef>(null);
     const centeredRef = useRef(false);
@@ -158,6 +160,12 @@ export default function MapaOSM({
                 mapStyle={OPENFREEMAP_STYLE}
                 onPress={clickable ? handleMapPress : undefined}
                 onRegionDidChange={handleRegionDidChange}
+                dragPan={interactive}
+                touchZoom={interactive}
+                doubleTapZoom={interactive}
+                doubleTapHoldZoom={interactive}
+                touchRotate={interactive}
+                touchPitch={interactive}
             >
                 <Camera
                     ref={cameraRef}
@@ -170,7 +178,11 @@ export default function MapaOSM({
                     <Marker
                         key={marker.id}
                         lngLat={marker.coords}
-                        onPress={() => setPickedMarker(marker)}
+                        onPress={
+                            interactive
+                                ? () => setPickedMarker(marker)
+                                : undefined
+                        }
                     >
                         <View style={styles.pin} />
                     </Marker>
