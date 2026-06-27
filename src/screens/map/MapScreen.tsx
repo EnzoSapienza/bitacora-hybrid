@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import MapaOSM from "@/components/map/Map";
+import MapOSM from "@/components/map/Map";
 import useLocation from "@/hooks/useLocation";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -40,7 +40,7 @@ export default function MapScreen() {
     );
 
     return (
-        <MapaOSM
+        <MapOSM
             userLocation={
                 location ? [location.longitude, location.latitude] : null
             }

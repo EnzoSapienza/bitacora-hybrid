@@ -23,7 +23,7 @@ import { useImagePicker } from "@/hooks/useImagePicker";
 
 import { PointFormContent } from "./PointFormContent";
 import MapMarker from "@/types/models/MapMarker";
-import MapaOSM from "@/components/map/Map";
+import MapOSM from "@/components/map/Map";
 import { Modal, Portal } from "react-native-paper";
 
 type PointFormRouteProp = RouteProp<TravelStackParamList, "PointForm">;
@@ -210,7 +210,7 @@ export default function PointFormScreen() {
                         contentContainerStyle={{ flex: 1 }}
                     >
                         <View style={{ flex: 1 }}>
-                            <MapaOSM
+                            <MapOSM
                                 clickable
                                 showUserLocation
                                 followUserLocation

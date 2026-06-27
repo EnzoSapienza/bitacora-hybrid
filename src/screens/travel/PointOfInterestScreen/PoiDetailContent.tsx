@@ -19,7 +19,7 @@ import {
     formatDateLocalized,
     formatTimeLocalized,
 } from "@/components/utils/date";
-import MapaOSM from "@/components/map/Map";
+import MapOSM from "@/components/map/Map";
 
 const { width } = Dimensions.get("window");
 
@@ -207,7 +207,7 @@ export const PoiDetailContent = ({
                                 { borderColor: colors.grisClaro },
                             ]}
                         >
-                            <MapaOSM
+                            <MapOSM
                                 interactive={false}
                                 initialCenter={[longitude, latitude]}
                                 initialZoom={15}

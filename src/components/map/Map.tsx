@@ -35,7 +35,7 @@ const OPENFREEMAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
 const NEW_PIN_ID = "__new_pin__";
 
-export default function MapaOSM({
+export default function MapOSM({
     initialCenter = [0, 0],
     initialZoom = 13,
     markers = [],
