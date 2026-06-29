@@ -1,13 +1,33 @@
 import { useState } from 'react';
-import { Alert, Linking } from 'react-native';
+import { Linking } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import * as ImageManipulator from 'expo-image-manipulator';
 
+type DialogState = {
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: { label: string; onPress?: () => void; style?: 'cancel' | 'default' }[];
+};
+
+const DIALOG_HIDDEN: DialogState = {
+    visible: false,
+    title: '',
+    message: '',
+    actions: [],
+};
 
 export function useImagePicker(multiple = true) {
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
+    const [dialog, setDialog] = useState<DialogState>(DIALOG_HIDDEN);
     const { t } = useTranslation();
+
+    const hideDialog = () => setDialog(DIALOG_HIDDEN);
+
+    const showDialog = (config: Omit<DialogState, 'visible'>) => {
+        setDialog({ visible: true, ...config });
+    };
 
     const seleccionarDeGaleria = async () => {
         let permission = await ImagePicker.getMediaLibraryPermissionsAsync();
@@ -18,19 +38,20 @@ export function useImagePicker(multiple = true) {
 
         if (!permission.granted) {
             if (!permission.canAskAgain) {
-                Alert.alert(
-                    t('imagePicker.permissions.title'),
-                    t('imagePicker.permissions.galleryConfig'),
-                    [
-                        { text: t('common.cancel'), style: 'cancel' },
-                        { text: t('imagePicker.permissions.openSettings'), onPress: () => Linking.openSettings() },
-                    ]
-                );
+                showDialog({
+                    title: t('imagePicker.permissions.title'),
+                    message: t('imagePicker.permissions.galleryConfig'),
+                    actions: [
+                        { label: t('common.cancel'), style: 'cancel', onPress: hideDialog },
+                        { label: t('imagePicker.permissions.openSettings'), onPress: () => { hideDialog(); Linking.openSettings(); } },
+                    ],
+                });
             } else {
-                Alert.alert(
-                    t('imagePicker.permissions.title'),
-                    t('imagePicker.permissions.galleryWarning')
-                );
+                showDialog({
+                    title: t('imagePicker.permissions.title'),
+                    message: t('imagePicker.permissions.galleryWarning'),
+                    actions: [{ label: t('common.cancel'), style: 'cancel', onPress: hideDialog }],
+                });
             }
             return;
         }
@@ -49,7 +70,11 @@ export function useImagePicker(multiple = true) {
                 setSelectedImages(prev => multiple ? [...prev, ...uris] : [uris[0]]);
             }
         } catch {
-            Alert.alert(t('imagePicker.errors.title'), t('imagePicker.errors.gallery'));
+            showDialog({
+                title: t('imagePicker.errors.title'),
+                message: t('imagePicker.errors.gallery'),
+                actions: [{ label: t('common.cancel'), style: 'cancel', onPress: hideDialog }],
+            });
         }
     };
 
@@ -62,19 +87,20 @@ export function useImagePicker(multiple = true) {
 
         if (!permission.granted) {
             if (!permission.canAskAgain) {
-                Alert.alert(
-                    t('imagePicker.permissions.title'),
-                    t('imagePicker.permissions.cameraConfig'),
-                    [
-                        { text: t('common.cancel'), style: 'cancel' },
-                        { text: t('imagePicker.permissions.openSettings'), onPress: () => Linking.openSettings() },
-                    ]
-                );
+                showDialog({
+                    title: t('imagePicker.permissions.title'),
+                    message: t('imagePicker.permissions.cameraConfig'),
+                    actions: [
+                        { label: t('common.cancel'), style: 'cancel', onPress: hideDialog },
+                        { label: t('imagePicker.permissions.openSettings'), onPress: () => { hideDialog(); Linking.openSettings(); } },
+                    ],
+                });
             } else {
-                Alert.alert(
-                    t('imagePicker.permissions.title'),
-                    t('imagePicker.permissions.cameraWarning')
-                );
+                showDialog({
+                    title: t('imagePicker.permissions.title'),
+                    message: t('imagePicker.permissions.cameraWarning'),
+                    actions: [{ label: t('common.cancel'), style: 'cancel', onPress: hideDialog }],
+                });
             }
             return;
         }
@@ -97,20 +123,23 @@ export function useImagePicker(multiple = true) {
             }
         } catch (error: any) {
             console.log('Error cámara:', JSON.stringify(error));
-            Alert.alert(t('imagePicker.errors.title'), t('imagePicker.errors.camera'));
+            showDialog({
+                title: t('imagePicker.errors.title'),
+                message: t('imagePicker.errors.camera'),
+                actions: [{ label: t('common.cancel'), style: 'cancel', onPress: hideDialog }],
+            });
         }
     };
 
     const handlePickImages = () => {
-        Alert.alert(
-            t('imagePicker.source.title'),
-            '',
-            [
-                { text: t('imagePicker.source.gallery'), onPress: seleccionarDeGaleria },
-                { text: t('imagePicker.source.camera'), onPress: tomarFoto },
-                { text: t('common.cancel'), style: 'cancel' },
-            ]
-        );
+        showDialog({
+            title: t('imagePicker.source.title'),
+            actions: [
+                { label: t('imagePicker.source.gallery'), onPress: () => { hideDialog(); seleccionarDeGaleria(); } },
+                { label: t('imagePicker.source.camera'), onPress: () => { hideDialog(); tomarFoto(); } },
+                { label: t('common.cancel'), style: 'cancel', onPress: hideDialog },
+            ],
+        });
     };
 
     const handleRemovePhoto = (uriToRemove: string) => {
@@ -122,5 +151,13 @@ export function useImagePicker(multiple = true) {
         setSelectedImages(uri ? [uri] : []);
     };
 
-    return { selectedImages, singleImage, setSingleImage, handlePickImages, handleRemovePhoto };
+    return {
+        selectedImages,
+        singleImage,
+        setSingleImage,
+        handlePickImages,
+        handleRemovePhoto,
+        dialog,
+        hideDialog,
+    };
 }

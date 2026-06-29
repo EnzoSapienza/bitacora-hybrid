@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { parse, isValid, startOfDay, endOfDay } from 'date-fns';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { Portal, Dialog, Button } from 'react-native-paper';
 import { useTravelStore } from '../../../hooks/firestore/useTravelStore';
 import { useAuth } from '../../../hooks/useAuth'; 
 import { useAppStore } from '../../../store/appStore';
@@ -20,7 +21,7 @@ export default function TravelFormScreen() {
     const { user } = useAuth();
     const { addTravel, loading: storeLoading, error } = useTravelStore();
     const { uploadImage, uploading } = useCloudinaryUpload();
-    const { singleImage, handlePickImages } = useImagePicker(false);
+    const { singleImage, handlePickImages, dialog, hideDialog } = useImagePicker(false);
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -113,33 +114,53 @@ export default function TravelFormScreen() {
     }, [navigation, isFormValid, estaCargando, name, description, startDateStr, endDateStr, visibility, singleImage]);
 
     return (
-        <ScrollView
-            style={[styles.container, { backgroundColor: colors.grisFondoApp }]}
-            contentContainerStyle={styles.content}
-        >
-            <TravelFormContent 
-                currentColors={colors}
-                name={name}
-                setName={setName}
-                description={description}
-                setDescription={setDescription}
-                startDateStr={startDateStr}
-                setStartDateStr={setStartDateStr}
-                endDateStr={endDateStr}
-                setEndDateStr={setEndDateStr}
-                visibility={visibility}
-                setVisibility={setVisibility}
-                imageUrl={singleImage}
-                handlePickImages={handlePickImages}
-                dateError={dateError}
-            />
+        <>
+            <ScrollView
+                style={[styles.container, { backgroundColor: colors.grisFondoApp }]}
+                contentContainerStyle={styles.content}
+            >
+                <TravelFormContent 
+                    currentColors={colors}
+                    name={name}
+                    setName={setName}
+                    description={description}
+                    setDescription={setDescription}
+                    startDateStr={startDateStr}
+                    setStartDateStr={setStartDateStr}
+                    endDateStr={endDateStr}
+                    setEndDateStr={setEndDateStr}
+                    visibility={visibility}
+                    setVisibility={setVisibility}
+                    imageUrl={singleImage}
+                    handlePickImages={handlePickImages}
+                    dateError={dateError}
+                />
 
-            {error && (
-                <Text style={[Typography.bodyMedium, { color: colors.rojoPin, marginTop: 12, textAlign: 'center' }]}>
-                    {error}
-                </Text>
-            )}
-        </ScrollView>
+                {error && (
+                    <Text style={[Typography.bodyMedium, { color: colors.rojoPin, marginTop: 12, textAlign: 'center' }]}>
+                        {error}
+                    </Text>
+                )}
+            </ScrollView>
+
+            <Portal>
+                <Dialog visible={dialog.visible} onDismiss={hideDialog}>
+                    <Dialog.Title>{dialog.title}</Dialog.Title>
+                    {dialog.message ? (
+                        <Dialog.Content>
+                            <Text>{dialog.message}</Text>
+                        </Dialog.Content>
+                    ) : null}
+                    <Dialog.Actions>
+                        {dialog.actions.map((action, idx) => (
+                            <Button key={idx} onPress={action.onPress}>
+                                {action.label}
+                            </Button>
+                        ))}
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+        </>
     );
 }
 

@@ -25,7 +25,7 @@ import { useImagePicker } from "@/hooks/useImagePicker";
 import { PointFormContent } from "./PointFormContent";
 import MapMarker from "@/types/models/MapMarker";
 import MapOSM from "@/components/map/Map";
-import { Modal, Portal } from "react-native-paper";
+import { Modal, Portal, Dialog, Button } from "react-native-paper";
 
 type PointFormRouteProp = RouteProp<TravelStackParamList, "PointForm">;
 
@@ -65,7 +65,7 @@ export default function PointFormScreen() {
     const [address, setAddress] = useState("");
     const [mapPickerVisible, setMapPickerVisible] = useState(false);
 
-    const { selectedImages, handlePickImages, handleRemovePhoto } = useImagePicker();
+    const { selectedImages, handlePickImages, handleRemovePhoto, dialog, hideDialog } = useImagePicker();
 
     const inicioViaje = travel?.startDate instanceof Date ? travel.startDate : null;
     const finViaje = travel?.endDate instanceof Date ? travel.endDate : null;
@@ -225,6 +225,24 @@ export default function PointFormScreen() {
                     </Text>
                 )}
             </ScrollView>
+
+            <Portal>
+                <Dialog visible={dialog.visible} onDismiss={hideDialog}>
+                    <Dialog.Title>{dialog.title}</Dialog.Title>
+                    {dialog.message ? (
+                        <Dialog.Content>
+                            <Text>{dialog.message}</Text>
+                        </Dialog.Content>
+                    ) : null}
+                    <Dialog.Actions>
+                        {dialog.actions.map((action, idx) => (
+                            <Button key={idx} onPress={action.onPress}>
+                                {action.label}
+                            </Button>
+                        ))}
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
 
             {mapPickerVisible && (
                 <Portal>
