@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     View,
     Text,
@@ -8,6 +8,7 @@ import {
     FlatList,
     NativeSyntheticEvent,
     NativeScrollEvent,
+    Pressable,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -20,6 +21,10 @@ import {
     formatTimeLocalized,
 } from "@/components/utils/date";
 import MapOSM from "@/components/map/Map";
+import { Button } from "react-native-paper";
+import CommentsSheet, {
+    CommentsProps,
+} from "@/components/point_comments/CommentsSheet";
 
 const { width } = Dimensions.get("window");
 
@@ -31,6 +36,9 @@ interface PoiDetailContentProps {
     latitude?: number;
     longitude?: number;
     imageUrls?: string[];
+    comments?: CommentsProps;
+    showComments?: boolean;
+    setShowComments?: (showComments: boolean) => void;
 }
 
 export const PoiDetailContent = ({
@@ -41,6 +49,9 @@ export const PoiDetailContent = ({
     latitude,
     longitude,
     imageUrls = [],
+    comments,
+    showComments = false,
+    setShowComments,
 }: PoiDetailContentProps) => {
     const colors = useAppStore((s) => s.themescolors);
     const { i18n, t } = useTranslation();
@@ -53,115 +64,202 @@ export const PoiDetailContent = ({
     };
 
     return (
-        <ScrollView
-            style={[styles.container, { backgroundColor: colors.grisFondoApp }]}
-            bounces={false}
-        >
-            <View
+        <>
+            <ScrollView
                 style={[
-                    styles.imageContainer,
-                    {
-                        borderBottomWidth: tieneFotos ? 0 : 1,
-                        borderColor: colors.grisClaro,
-                    },
+                    styles.container,
+                    { backgroundColor: colors.grisFondoApp },
                 ]}
+                bounces={false}
             >
-                {tieneFotos ? (
-                    <View style={styles.carouselWrapper}>
-                        <FlatList
-                            data={imageUrls}
-                            horizontal
-                            pagingEnabled
-                            showsHorizontalScrollIndicator={false}
-                            keyExtractor={(_, index) => index.toString()}
-                            onScroll={handleScroll}
-                            scrollEventThrottle={16}
-                            renderItem={({ item }) => (
-                                <View style={styles.carouselImageContainer}>
-                                    <Image
-                                        source={{ uri: item }}
-                                        style={styles.mainImage}
-                                        contentFit="cover"
-                                        transition={150}
-                                    />
+                <View
+                    style={[
+                        styles.imageContainer,
+                        {
+                            borderBottomWidth: tieneFotos ? 0 : 1,
+                            borderColor: colors.grisClaro,
+                        },
+                    ]}
+                >
+                    {tieneFotos ? (
+                        <View style={styles.carouselWrapper}>
+                            <FlatList
+                                data={imageUrls}
+                                horizontal
+                                pagingEnabled
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={(_, index) => index.toString()}
+                                onScroll={handleScroll}
+                                scrollEventThrottle={16}
+                                renderItem={({ item }) => (
+                                    <View style={styles.carouselImageContainer}>
+                                        <Image
+                                            source={{ uri: item }}
+                                            style={styles.mainImage}
+                                            contentFit="cover"
+                                            transition={150}
+                                        />
+                                    </View>
+                                )}
+                            />
+                            {imageUrls.length > 1 && (
+                                <View style={styles.indicatorContainer}>
+                                    {imageUrls.map((_, index) => (
+                                        <View
+                                            key={index}
+                                            style={[
+                                                styles.indicator,
+                                                index === activeIndex
+                                                    ? [
+                                                          styles.indicatorActive,
+                                                          {
+                                                              backgroundColor:
+                                                                  colors.blanco,
+                                                          },
+                                                      ]
+                                                    : [
+                                                          styles.indicatorInactive,
+                                                          {
+                                                              backgroundColor:
+                                                                  "rgba(255, 255, 255, 0.4)",
+                                                          },
+                                                      ],
+                                            ]}
+                                        />
+                                    ))}
                                 </View>
                             )}
-                        />
-                        {imageUrls.length > 1 && (
-                            <View style={styles.indicatorContainer}>
-                                {imageUrls.map((_, index) => (
-                                    <View
-                                        key={index}
-                                        style={[
-                                            styles.indicator,
-                                            index === activeIndex
-                                                ? [
-                                                      styles.indicatorActive,
-                                                      {
-                                                          backgroundColor:
-                                                              colors.blanco,
-                                                      },
-                                                  ]
-                                                : [
-                                                      styles.indicatorInactive,
-                                                      {
-                                                          backgroundColor:
-                                                              "rgba(255, 255, 255, 0.4)",
-                                                      },
-                                                  ],
-                                        ]}
-                                    />
-                                ))}
+                        </View>
+                    ) : (
+                        <ImagePlaceholder currentColors={colors} height={220} />
+                    )}
+                </View>
+
+                <View style={styles.body}>
+                    {visitDate && (
+                        <View style={styles.infoRow}>
+                            <View style={styles.infoItem}>
+                                <MaterialIcons
+                                    name="calendar-month"
+                                    size={16}
+                                    color={colors.grisMedio}
+                                    style={styles.iconStyle}
+                                />
+                                <Text
+                                    style={[
+                                        Typography.bodyMedium,
+                                        { color: colors.grisOscuro },
+                                    ]}
+                                >
+                                    {formatDateLocalized(
+                                        visitDate,
+                                        i18n.language,
+                                    )}
+                                </Text>
                             </View>
-                        )}
-                    </View>
-                ) : (
-                    <ImagePlaceholder currentColors={colors} height={220} />
-                )}
-            </View>
+                            <View style={styles.infoItem}>
+                                <MaterialIcons
+                                    name="access-time"
+                                    size={16}
+                                    color={colors.grisMedio}
+                                    style={styles.iconStyle}
+                                />
+                                <Text
+                                    style={[
+                                        Typography.bodyMedium,
+                                        { color: colors.grisOscuro },
+                                    ]}
+                                >
+                                    {formatTimeLocalized(
+                                        visitDate,
+                                        i18n.language,
+                                    )}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
 
-            <View style={styles.body}>
-                {visitDate && (
-                    <View style={styles.infoRow}>
-                        <View style={styles.infoItem}>
+                    {address ? (
+                        <View
+                            style={[
+                                styles.addressContainer,
+                                {
+                                    backgroundColor: colors.blanco,
+                                    borderColor: colors.grisClaro,
+                                },
+                            ]}
+                        >
                             <MaterialIcons
-                                name="calendar-month"
-                                size={16}
-                                color={colors.grisMedio}
-                                style={styles.iconStyle}
+                                name="location-on"
+                                size={18}
+                                color={colors.azulProfundo}
+                                style={{ marginRight: 8 }}
                             />
                             <Text
                                 style={[
                                     Typography.bodyMedium,
-                                    { color: colors.grisOscuro },
+                                    { color: colors.grisOscuro, flex: 1 },
                                 ]}
+                                numberOfLines={2}
                             >
-                                {formatDateLocalized(visitDate, i18n.language)}
+                                {address}
                             </Text>
                         </View>
-                        <View style={styles.infoItem}>
-                            <MaterialIcons
-                                name="access-time"
-                                size={16}
-                                color={colors.grisMedio}
-                                style={styles.iconStyle}
-                            />
+                    ) : null}
+
+                    {latitude != null && longitude != null && (
+                        <>
                             <Text
                                 style={[
-                                    Typography.bodyMedium,
-                                    { color: colors.grisOscuro },
+                                    Typography.titleMedium,
+                                    {
+                                        color: colors.azulOscuro,
+                                        fontWeight: "700",
+                                        marginTop: 24,
+                                        marginBottom: 8,
+                                    },
                                 ]}
                             >
-                                {formatTimeLocalized(visitDate, i18n.language)}
+                                {t("travel.poiForm.locationLabel")}
                             </Text>
-                        </View>
-                    </View>
-                )}
+                            <View
+                                style={[
+                                    styles.mapContainer,
+                                    { borderColor: colors.grisClaro },
+                                ]}
+                            >
+                                <MapOSM
+                                    interactive={false}
+                                    initialCenter={[longitude, latitude]}
+                                    initialZoom={15}
+                                    markers={[
+                                        {
+                                            id: "poi-detail",
+                                            coords: [longitude, latitude],
+                                            name,
+                                            address: address ?? "",
+                                        },
+                                    ]}
+                                />
+                            </View>
+                        </>
+                    )}
 
-                {address ? (
+                    <Text
+                        style={[
+                            Typography.labelLarge,
+                            {
+                                color: colors.grisMedio,
+                                marginTop: 24,
+                                marginBottom: 8,
+                            },
+                        ]}
+                    >
+                        {t("travel.poiForm.notesLabel")}
+                    </Text>
                     <View
                         style={[
-                            styles.addressContainer,
+                            styles.notesBox,
                             {
                                 backgroundColor: colors.blanco,
                                 borderColor: colors.grisClaro,
@@ -169,108 +267,60 @@ export const PoiDetailContent = ({
                         ]}
                     >
                         <MaterialIcons
-                            name="location-on"
-                            size={18}
+                            name="format-quote"
+                            size={48}
                             color={colors.azulProfundo}
-                            style={{ marginRight: 8 }}
+                            style={styles.quoteIcon}
                         />
                         <Text
                             style={[
                                 Typography.bodyMedium,
-                                { color: colors.grisOscuro, flex: 1 },
-                            ]}
-                            numberOfLines={2}
-                        >
-                            {address}
-                        </Text>
-                    </View>
-                ) : null}
-
-                {latitude != null && longitude != null && (
-                    <>
-                        <Text
-                            style={[
-                                Typography.titleMedium,
                                 {
-                                    color: colors.azulOscuro,
-                                    fontWeight: "700",
-                                    marginTop: 24,
-                                    marginBottom: 8,
+                                    color: colors.grisOscuro,
+                                    lineHeight: 20,
+                                    fontStyle: notes ? "italic" : "normal",
                                 },
                             ]}
                         >
-                            {t("travel.poiForm.locationLabel")}
+                            {notes || ""}
                         </Text>
-                        <View
-                            style={[
-                                styles.mapContainer,
-                                { borderColor: colors.grisClaro },
-                            ]}
-                        >
-                            <MapOSM
-                                interactive={false}
-                                initialCenter={[longitude, latitude]}
-                                initialZoom={15}
-                                markers={[
-                                    {
-                                        id: "poi-detail",
-                                        coords: [longitude, latitude],
-                                        name,
-                                        address: address ?? "",
-                                    },
-                                ]}
-                            />
-                        </View>
-                    </>
-                )}
+                    </View>
 
-                <Text
-                    style={[
-                        Typography.labelLarge,
-                        {
-                            color: colors.grisMedio,
-                            marginTop: 24,
-                            marginBottom: 8,
-                        },
-                    ]}
-                >
-                    {t("travel.poiForm.notesLabel")}
-                </Text>
-                <View
-                    style={[
-                        styles.notesBox,
-                        {
-                            backgroundColor: colors.blanco,
-                            borderColor: colors.grisClaro,
-                        },
-                    ]}
-                >
-                    <MaterialIcons
-                        name="format-quote"
-                        size={48}
-                        color={colors.azulProfundo}
-                        style={styles.quoteIcon}
-                    />
-                    <Text
-                        style={[
-                            Typography.bodyMedium,
-                            {
-                                color: colors.grisOscuro,
-                                lineHeight: 20,
-                                fontStyle: notes ? "italic" : "normal",
-                            },
-                        ]}
-                    >
-                        {notes || ""}
-                    </Text>
+                    <View>
+                        <Button
+                            mode="contained-tonal"
+                            onPress={() => setShowComments?.(true)}
+                        >
+                            {t("point.seeComments")}
+                        </Button>
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+
+            {showComments && (
+                <>
+                    <Pressable
+                        onPress={() => setShowComments?.(false)}
+                        style={styles.pressableBackground}
+                    />
+                    <CommentsSheet
+                        comments={comments?.comments}
+                        loadingComments={comments?.loadingComments}
+                        errorComments={comments?.errorComments}
+                        onAddComment={comments?.onAddComment}
+                        onAddReply={comments?.onAddReply}
+                        onLike={comments?.onLike}
+                        onUnlike={comments?.onUnlike}
+                        style={styles.commentsSheet}
+                    />
+                </>
+            )}
+        </>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, position: "relative" },
     imageContainer: { width, height: 220, overflow: "hidden" },
     carouselWrapper: { width, height: 220, position: "relative" },
     carouselImageContainer: { width, height: 220 },
@@ -320,4 +370,11 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
     quoteIcon: { position: "absolute", top: -6, left: 8, opacity: 0.12 },
+    commentsSheet: {
+        zIndex: 100,
+    },
+    pressableBackground: {
+        ...StyleSheet.absoluteFill,
+        backgroundColor: "rgba(0, 0, 0, 0.45)",
+    },
 });

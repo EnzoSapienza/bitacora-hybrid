@@ -9,7 +9,6 @@ import PublicTravelDetailScreen from "@/screens/explore/PublicTravelDetailScreen
 import PublicPointDetailScreen from "@/screens/explore/PublicPointDetailScreen";
 import { useTranslation } from "react-i18next";
 
-
 export type TravelStackParamList = {
     TravelDetails: { travelId: string };
     TravelForm: undefined;
@@ -31,10 +30,25 @@ export default function TravelNavigator() {
             <Stack.Screen name="TravelForm" component={TravelFormScreen} />
             <Stack.Screen name="PointForm" component={PointFormScreen} />
             <Stack.Screen name="PoiDetail" component={PointOfInterestScreen} />
-            <Stack.Screen name="ManageCollaborators" component={ManageCollaboratorsScreen} />
-            <Stack.Screen name="PublicProfile" component={PublicProfileScreen} options={{ title: t('explore.nav.profile') }} />
-            <Stack.Screen name="PublicTravelDetail" component={PublicTravelDetailScreen} options={{ title: t('explore.nav.travelDetail') }} />
-            <Stack.Screen name="PublicPointDetail" component={PublicPointDetailScreen} options={{ title: t('explore.nav.poi') }} />
+            <Stack.Screen
+                name="ManageCollaborators"
+                component={ManageCollaboratorsScreen}
+            />
+            <Stack.Screen
+                name="PublicProfile"
+                component={PublicProfileScreen}
+                options={{ title: t("explore.nav.profile") }}
+            />
+            <Stack.Screen
+                name="PublicTravelDetail"
+                component={PublicTravelDetailScreen}
+                options={{ title: t("explore.nav.travelDetail") }}
+            />
+            <Stack.Screen
+                name="PublicPointDetail"
+                component={PublicPointDetailScreen}
+                options={{ title: t("explore.nav.poi") }}
+            />
         </Stack.Navigator>
     );
 }
