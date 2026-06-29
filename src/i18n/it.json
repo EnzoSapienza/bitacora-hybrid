@@ -51,7 +51,10 @@
     },
     "home": {
         "title": "Inizio",
-        "tabs": { "mine": "I Miei Viaggi", "shared": "Collaborazioni" }
+        "tabs": {
+            "mine": "I Miei Viaggi",
+            "shared": "Collaborazioni"
+        }
     },
     "travel": {
         "create": "Crea viaggio",
@@ -172,6 +175,57 @@
             "loadFailed": "Errore durante il caricamento dei collaboratori",
             "notOwner": "Solo il proprietario può gestire i collaboratori",
             "saveFailed": "Errore durante il salvataggio dei collaboratori"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Accedi",
+            "emailPlaceholder": "Email",
+            "passwordPlaceholder": "Password",
+            "submit": "Accedi",
+            "divider": "oppure",
+            "google": "Continua con Google",
+            "noAccount": "Non hai un account? Registrati"
+        },
+        "register": {
+            "title": "Crea un account",
+            "subtitle": "Completa i tuoi dati per iniziare",
+            "nameLabel": "Nome",
+            "namePlaceholder": "Il tuo nome completo",
+            "nameMin": "Il nome deve avere almeno 2 caratteri",
+            "emailLabel": "Email",
+            "emailPlaceholder": "tu@email.com",
+            "emailInvalid": "Email non valida",
+            "passwordLabel": "Password",
+            "passwordPlaceholder": "Minimo 6 caratteri",
+            "passwordMin": "Minimo 6 caratteri",
+            "confirmPasswordLabel": "Conferma password",
+            "confirmPasswordPlaceholder": "Ripeti la password",
+            "passwordMismatch": "Le password non coincidono",
+            "submit": "Crea account",
+            "alreadyHaveAccount": "Hai già un account? Accedi"
+        },
+        "username": {
+            "title": "Scegli il tuo nome utente",
+            "subtitle": "Solo lettere minuscole, numeri e trattino basso. Minimo 3 caratteri.",
+            "placeholder": "nome_utente",
+            "invalid": "Sono consentite solo lettere minuscole, numeri e _. Minimo 3 caratteri.",
+            "taken": "Questo nome utente è già in uso.",
+            "saveError": "Errore durante il salvataggio del nome utente.",
+            "submit": "Conferma",
+            "logout": "Esci"
+        },
+        "errors": {
+            "emailInUse": "Questa email è già registrata.",
+            "weakPassword": "La password è troppo debole.",
+            "invalidCredential": "Email o password errati.",
+            "invalidEmail": "Il formato dell'email non è valido.",
+            "tooManyRequests": "Troppi tentativi. Riprova più tardi.",
+            "default": "Si è verificato un errore. Riprova.",
+            "googleNoToken": "Impossibile ottenere il token di Google.",
+            "googleInProgress": "È già in corso un accesso.",
+            "googlePlayServices": "Google Play Services non è disponibile.",
+            "googleDefault": "Errore durante l'accesso con Google."
         }
     }
 }

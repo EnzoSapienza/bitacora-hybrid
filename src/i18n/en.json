@@ -51,7 +51,10 @@
     },
     "home": {
         "title": "Home",
-        "tabs": { "mine": "My Trips", "shared": "Collaborations" }
+        "tabs": {
+            "mine": "My Trips",
+            "shared": "Collaborations"
+        }
     },
     "travel": {
         "create": "Create trip",
@@ -172,6 +175,57 @@
             "loadFailed": "Error loading collaborators",
             "notOwner": "Only the owner can manage collaborators",
             "saveFailed": "Error saving collaborators"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Sign In",
+            "emailPlaceholder": "Email",
+            "passwordPlaceholder": "Password",
+            "submit": "Sign In",
+            "divider": "or",
+            "google": "Continue with Google",
+            "noAccount": "Don't have an account? Sign up"
+        },
+        "register": {
+            "title": "Create Account",
+            "subtitle": "Complete your information to get started",
+            "nameLabel": "Name",
+            "namePlaceholder": "Your full name",
+            "nameMin": "Name must be at least 2 characters",
+            "emailLabel": "Email",
+            "emailPlaceholder": "you@email.com",
+            "emailInvalid": "Invalid email",
+            "passwordLabel": "Password",
+            "passwordPlaceholder": "Minimum 6 characters",
+            "passwordMin": "Minimum 6 characters",
+            "confirmPasswordLabel": "Confirm Password",
+            "confirmPasswordPlaceholder": "Repeat your password",
+            "passwordMismatch": "Passwords do not match",
+            "submit": "Create Account",
+            "alreadyHaveAccount": "Already have an account? Sign in"
+        },
+        "username": {
+            "title": "Choose your username",
+            "subtitle": "Only lowercase letters, numbers, and underscores. Minimum 3 characters.",
+            "placeholder": "username",
+            "invalid": "Only lowercase letters, numbers, and underscores. Minimum 3 characters.",
+            "taken": "That username is already taken.",
+            "saveError": "Error saving username.",
+            "submit": "Confirm",
+            "logout": "Log Out"
+        },
+        "errors": {
+            "emailInUse": "This email is already registered.",
+            "weakPassword": "The password is too weak.",
+            "invalidCredential": "Incorrect email or password.",
+            "invalidEmail": "The email format is not valid.",
+            "tooManyRequests": "Too many attempts. Try again later.",
+            "default": "An error occurred. Please try again.",
+            "googleNoToken": "Could not obtain Google token.",
+            "googleInProgress": "A sign-in is already in progress.",
+            "googlePlayServices": "Google Play Services is not available.",
+            "googleDefault": "Error signing in with Google."
         }
     }
 }

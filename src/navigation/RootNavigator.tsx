@@ -9,9 +9,11 @@ import { useAppStore } from "../store/appStore";
 import { Themes } from "../constants/themes";
 import AppNavigator from "./AppNavigator";
 import AuthNavigator from "./AuthNavigator";
+import UsernameScreen from "../screens/auth/UsernameScreen";
 
 export default function RootNavigator() {
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+    const needsUsername = useAuthStore((s) => s.needsUsername);
     const resolvedTheme = useAppStore((s) => s.resolvedTheme);
 
     const navTheme = useMemo(() => {
@@ -30,9 +32,18 @@ export default function RootNavigator() {
         };
     }, [resolvedTheme]);
 
+    let content;
+    if (!isAuthenticated) {
+        content = <AuthNavigator />;
+    } else if (needsUsername) {
+        content = <UsernameScreen />;
+    } else {
+        content = <AppNavigator />;
+    }
+
     return (
         <NavigationContainer theme={navTheme}>
-            {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+            {content}
         </NavigationContainer>
     );
 }

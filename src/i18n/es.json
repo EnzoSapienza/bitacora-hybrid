@@ -46,12 +46,15 @@
         "errors": {
             "title": "Error",
             "gallery": "Hubo un problema al intentar abrir la galería.",
-            "camera": "Hubo un problema al intentar usar la cámara.",
-            "tabs": { "mine": "Mis Viajes", "shared": "Colaboraciones" }
+            "camera": "Hubo un problema al intentar usar la cámara."
         }
     },
     "home": {
-        "title": "Inicio"
+        "title": "Inicio",
+        "tabs": {
+            "mine": "Mis Viajes",
+            "shared": "Colaboraciones"
+        }
     },
     "travel": {
         "create": "Crear viaje",
@@ -172,6 +175,57 @@
             "loadFailed": "Error al cargar colaboradores",
             "notOwner": "Sólo el dueño puede gestionar colaboradores",
             "saveFailed": "Error al guardar colaboradores"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Iniciar sesión",
+            "emailPlaceholder": "Email",
+            "passwordPlaceholder": "Contraseña",
+            "submit": "Ingresar",
+            "divider": "o",
+            "google": "Continuar con Google",
+            "noAccount": "¿No tenés cuenta? Registrate"
+        },
+        "register": {
+            "title": "Crear cuenta",
+            "subtitle": "Completá tus datos para empezar",
+            "nameLabel": "Nombre",
+            "namePlaceholder": "Tu nombre completo",
+            "nameMin": "El nombre debe tener al menos 2 caracteres",
+            "emailLabel": "Email",
+            "emailPlaceholder": "tu@email.com",
+            "emailInvalid": "Email inválido",
+            "passwordLabel": "Contraseña",
+            "passwordPlaceholder": "Mínimo 6 caracteres",
+            "passwordMin": "Mínimo 6 caracteres",
+            "confirmPasswordLabel": "Confirmar contraseña",
+            "confirmPasswordPlaceholder": "Repetí tu contraseña",
+            "passwordMismatch": "Las contraseñas no coinciden",
+            "submit": "Crear cuenta",
+            "alreadyHaveAccount": "¿Ya tenés cuenta? Iniciá sesión"
+        },
+        "username": {
+            "title": "Elegí tu usuario",
+            "subtitle": "Solo letras, números y guión bajo. Mínimo 3 caracteres.",
+            "placeholder": "nombre_usuario",
+            "invalid": "Solo letras minúsculas, números y _. Mínimo 3 caracteres.",
+            "taken": "Ese nombre de usuario ya está en uso.",
+            "saveError": "Error al guardar el nombre de usuario.",
+            "submit": "Confirmar",
+            "logout": "Salir"
+        },
+        "errors": {
+            "emailInUse": "Este email ya está registrado.",
+            "weakPassword": "La contraseña es muy débil.",
+            "invalidCredential": "Email o contraseña incorrectos.",
+            "invalidEmail": "El formato del email no es válido.",
+            "tooManyRequests": "Demasiados intentos. Intentá más tarde.",
+            "default": "Ocurrió un error. Intentá de nuevo.",
+            "googleNoToken": "No se obtuvo el token de Google.",
+            "googleInProgress": "Ya hay un inicio de sesión en curso.",
+            "googlePlayServices": "Google Play Services no está disponible.",
+            "googleDefault": "Error al iniciar sesión con Google."
         }
     }
 }

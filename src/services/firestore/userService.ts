@@ -12,10 +12,26 @@ import {
     increment,
     query,
     where,
-    documentId
+    documentId,
+    setDoc
 } from "firebase/firestore";
 
 export const userService = {
+    createUserProfile: async (uid: string, data: { nombre: string; email: string }) => {
+        const userRef = doc(db, "users", uid);
+        await setDoc(userRef, {
+            nombre: data.nombre,
+            email: data.email,
+            createdAt: serverTimestamp()
+        }, { merge: true });
+    },
+
+    saveUsername: async (uid: string, username: string) => {
+        const userRef = doc(db, "users", uid);
+        await setDoc(userRef, {
+            username: username.toLowerCase(),
+        }, { merge: true });
+    },
     getPublicProfile: async (userId: string) => {
         const snap = await getDoc(doc(db, "users", userId));
         return snap.exists() ? { id: snap.id, ...snap.data() } : null;
@@ -80,5 +96,13 @@ export const userService = {
         const q = query(collection(db, "users"), where(documentId(), "in", uids));
         const snap = await getDocs(q);
         return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    }
+    },
+    isUsernameAvailable: async (username: string) => {
+        const q = query(
+            collection(db, "users"),
+            where("username", "==", username.toLowerCase())
+        );
+        const snap = await getDocs(q);
+        return snap.empty;
+    },
 };
