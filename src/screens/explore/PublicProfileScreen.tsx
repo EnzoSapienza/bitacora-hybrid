@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet, FlatList, Text } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTranslation } from 'react-i18next'; // 1. Importar useTranslation
+import { useTranslation } from 'react-i18next';
 import { ExploreStackParamList } from '../../navigation/tabs/ExploreNavigator';
 import { usePublicProfileStore } from '@/hooks/explore/usePublicProfileStore';
 import { useAuthStore } from '@/store/authStore';
@@ -20,7 +20,7 @@ export default function PublicProfileScreen() {
     const store = usePublicProfileStore();
     const { user: currentUser } = useAuthStore();
     const colors = useAppStore((s) => s.themescolors);
-    const { t } = useTranslation(); // 2. Inicializar el hook
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (userId) store.loadProfile(userId, currentUser?.uid);

@@ -16,7 +16,6 @@ export default function HomeScreen() {
     const colors = useAppStore((s) => s.themescolors);
     const { t } = useTranslation();
 
-    // Obtenemos ambos estados y ambas funciones de carga
     const { travels, sharedTravels, loading, sharedLoading, fetchTravels, fetchSharedTravels } = useTravelStore();
 
     useEffect(() => {
