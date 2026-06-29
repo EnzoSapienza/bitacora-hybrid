@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import { usePoiStore } from "@/hooks/firestore/usePoiStore";
 import { useTravelStore } from "@/hooks/firestore/useTravelStore";
+import { useAuthStore } from "@/store/authStore";
 import { useAppStore } from "@/store/appStore";
 import useLocation from "@/hooks/useLocation";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
@@ -38,10 +39,20 @@ export default function PointFormScreen() {
     const { addPoint, loading: storeLoading, error } = usePoiStore();
     const { location, errorMsg, loading: locationLoading } = useLocation();
     const { uploadImage, uploading: uploadingImages } = useCloudinaryUpload();
+    const { user } = useAuthStore();
 
-    const travel = useTravelStore((state) =>
-        state.travels.find((t) => t.id === travelId),
+    const { travels, sharedTravels, getTravelById, fetchTravels, fetchSharedTravels } = useTravelStore();
+    const [travel, setTravel] = useState(
+        travels.find((t) => t.id === travelId) || sharedTravels.find((t) => t.id === travelId)
     );
+
+    useEffect(() => {
+        if (!travel) {
+            getTravelById(travelId).then((t) => {
+                if (t) setTravel(t);
+            });
+        }
+    }, [travelId, travel, getTravelById]);
 
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");
@@ -52,14 +63,12 @@ export default function PointFormScreen() {
         lng: number;
     } | null>(null);
     const [address, setAddress] = useState("");
-
     const [mapPickerVisible, setMapPickerVisible] = useState(false);
 
-    const { selectedImages, handlePickImages, handleRemovePhoto } =
-        useImagePicker();
+    const { selectedImages, handlePickImages, handleRemovePhoto } = useImagePicker();
 
-    const inicioViaje = travel ? new Date(travel.startDate) : null;
-    const finViaje = travel ? new Date(travel.endDate) : null;
+    const inicioViaje = travel?.startDate instanceof Date ? travel.startDate : null;
+    const finViaje = travel?.endDate instanceof Date ? travel.endDate : null;
     const isFechaInvalida = !!(
         inicioViaje &&
         finViaje &&
@@ -71,8 +80,7 @@ export default function PointFormScreen() {
             ? `${formatDate(inicioViaje)} ${t("travel.poiForm.dateRangeJoin")} ${formatDate(finViaje)}`
             : "";
 
-    const isFormValid =
-        name.trim().length > 0 && capturedCoords !== null && !isFechaInvalida;
+    const isFormValid = name.trim().length > 0 && capturedCoords !== null && !isFechaInvalida;
     const estaCargando = storeLoading || uploadingImages || locationLoading;
 
     const handleCaptureLocation = () => {
@@ -99,6 +107,11 @@ export default function PointFormScreen() {
                 (url): url is string => url !== null,
             );
 
+            const authorizedUsers = [
+                travel?.ownerId,
+                ...(travel?.privileges ?? []),
+            ].filter((uid): uid is string => !!uid);
+
             await addPoint(travelId, {
                 name: name.trim(),
                 address: address.trim(),
@@ -108,11 +121,21 @@ export default function PointFormScreen() {
                 latitude: capturedCoords.lat,
                 longitude: capturedCoords.lng,
                 imageUrls: validRemoteUrls,
+                authorizedUsers,
             });
 
+            if (user?.uid) {
+                const isShared = sharedTravels.some((t) => t.id === travelId);
+                if (isShared) {
+                    await fetchSharedTravels(user.uid);
+                } else {
+                    await fetchTravels(user.uid);
+                }
+            }
+
             navigation.goBack();
-        } catch {
-            // Error controlado por el store
+        } catch (e) {
+            console.error(e);
         }
     };
 
@@ -202,7 +225,8 @@ export default function PointFormScreen() {
                     </Text>
                 )}
             </ScrollView>
-            {mapPickerVisible && ( // ← nuevo: todo este bloque
+
+            {mapPickerVisible && (
                 <Portal>
                     <Modal
                         visible={mapPickerVisible}
@@ -215,35 +239,18 @@ export default function PointFormScreen() {
                                 showUserLocation
                                 followUserLocation
                                 userLocation={
-                                    location
-                                        ? [
-                                              location.longitude,
-                                              location.latitude,
-                                          ]
-                                        : null
+                                    location ? [location.longitude, location.latitude] : null
                                 }
                                 initialCenter={
-                                    location
-                                        ? [
-                                              location.longitude,
-                                              location.latitude,
-                                          ]
-                                        : undefined
+                                    location ? [location.longitude, location.latitude] : undefined
                                 }
                                 onNewMarker={handleMapPick}
                             />
                             <TouchableOpacity
                                 onPress={() => setMapPickerVisible(false)}
-                                style={[
-                                    styles.closeMapButton,
-                                    { backgroundColor: colors.blanco },
-                                ]}
+                                style={[styles.closeMapButton, { backgroundColor: colors.blanco }]}
                             >
-                                <MaterialIcons
-                                    name="close"
-                                    size={24}
-                                    color={colors.azulProfundo}
-                                />
+                                <MaterialIcons name="close" size={24} color={colors.azulProfundo} />
                             </TouchableOpacity>
                         </View>
                     </Modal>

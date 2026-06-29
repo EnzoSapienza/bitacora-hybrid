@@ -2,7 +2,18 @@
  * Encapsula el CRUD de usuarios en Firestore.
  */
 import { db } from "../firebase";
-import { collection, doc, getDoc, getDocs, runTransaction, serverTimestamp, increment } from "firebase/firestore";
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    runTransaction,
+    serverTimestamp,
+    increment,
+    query,
+    where,
+    documentId
+} from "firebase/firestore";
 
 export const userService = {
     getPublicProfile: async (userId: string) => {
@@ -50,5 +61,24 @@ export const userService = {
         const followingCol = collection(db, "followers", currentUserId, "following");
         const snap = await getDocs(followingCol);
         return snap.docs.map(doc => doc.id);
+    },
+
+    searchUsers: async (text: string) => {
+        if (!text || text.trim().length === 0) return [];
+        const qText = text.toLowerCase();
+        const q = query(
+            collection(db, "users"),
+            where("username", ">=", qText),
+            where("username", "<=", qText + "\uf8ff")
+        );
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    },
+
+    getUsersByIds: async (uids: string[]) => {
+        if (!uids || uids.length === 0) return [];
+        const q = query(collection(db, "users"), where(documentId(), "in", uids));
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
 };

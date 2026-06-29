@@ -44,7 +44,8 @@
         "errors": {
             "title": "Error",
             "gallery": "Hubo un problema al intentar abrir la galería.",
-            "camera": "Hubo un problema al intentar usar la cámara."
+            "camera": "Hubo un problema al intentar usar la cámara.",
+            "tabs": { "mine": "Mis Viajes", "shared": "Colaboraciones" }
         }
     },
     "home": {
@@ -144,5 +145,18 @@
         "searching_address": "Buscando dirección…",
         "name_placeholder": "Ubicación seleccionada",
         "address_placeholder": "No se pudo obtener la dirección del lugar"
+    },
+    "collaborators": {
+        "title": "Colaboradores",
+        "searchPlaceholder": "Buscar por nombre de usuario...",
+        "resultsHeader": "Resultados",
+        "currentHeader": "Colaboradores actuales",
+        "empty": "No hay colaboradores añadidos",
+        "errors": {
+            "notFound": "Viaje no encontrado",
+            "loadFailed": "Error al cargar colaboradores",
+            "notOwner": "Sólo el dueño puede gestionar colaboradores",
+            "saveFailed": "Error al guardar colaboradores"
+        }
     }
 }

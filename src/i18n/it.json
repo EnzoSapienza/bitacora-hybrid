@@ -48,7 +48,8 @@
         }
     },
     "home": {
-        "title": "Inizio"
+        "title": "Inizio",
+        "tabs": { "mine": "I Miei Viaggi", "shared": "Collaborazioni" }
     },
     "travel": {
         "create": "Crea viaggio",
@@ -144,5 +145,18 @@
         "searching_address": "Cerco una direzione...",
         "name_placeholder": "Location selezionata",
         "address_placeholder": "Non è stato possibile ottenere l'indirizzo del luogo"
+    },
+    "collaborators": {
+        "title": "Collaboratori",
+        "searchPlaceholder": "Cerca per nome utente...",
+        "resultsHeader": "Risultati",
+        "currentHeader": "Collaboratori attuali",
+        "empty": "Nessun collaboratore aggiunto",
+        "errors": {
+            "notFound": "Viaggio non trovato",
+            "loadFailed": "Errore durante il caricamento dei collaboratori",
+            "notOwner": "Solo il proprietario può gestire i collaboratori",
+            "saveFailed": "Errore durante il salvataggio dei collaboratori"
+        }
     }
 }

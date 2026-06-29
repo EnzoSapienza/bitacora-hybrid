@@ -14,7 +14,9 @@ import {
     where,
     limit,
     startAfter,
-    orderBy
+    orderBy,
+    writeBatch,
+    serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -33,7 +35,11 @@ const mapTravelDoc = (d: any) => {
 
 export const travelService = {
     getAll: async (uid: string) => {
-        const q = query(collection(db, COL), where('ownerId', '==', uid));
+        const q = query(
+            collection(db, COL),
+            where('ownerId', '==', uid),
+            orderBy('updatedAt', 'desc')
+        );
         const snap = await getDocs(q);
         return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     },
@@ -178,14 +184,51 @@ export const travelService = {
     },
 
     getPublicUserTravels: async (userId: string, viewerFollowsOwner: boolean = false) => {
-    const visibilities = viewerFollowsOwner ? ['public', 'followers'] : ['public'];
-    const q = query(
-        collection(db, COL),
-        where('ownerId', '==', userId),
-        where('visibility', 'in', visibilities),
-        orderBy('updatedAt', 'desc')
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map(mapTravelDoc);
-}
+        const visibilities = viewerFollowsOwner ? ['public', 'followers'] : ['public'];
+        const q = query(
+            collection(db, COL),
+            where('ownerId', '==', userId),
+            where('visibility', 'in', visibilities),
+            orderBy('updatedAt', 'desc')
+        );
+        const snap = await getDocs(q);
+        return snap.docs.map(mapTravelDoc);
+    },
+
+    syncTripAccess: async (tripId: string, newPrivileges: string[], removed: string[]) => {
+        const batch = writeBatch(db);
+
+        removed.forEach((uid) => {
+            batch.delete(doc(db, 'tripAccess', uid, 'trips', tripId));
+        });
+
+        newPrivileges.forEach((uid) => {
+            batch.set(doc(db, 'tripAccess', uid, 'trips', tripId), { addedAt: serverTimestamp() });
+        });
+
+        await batch.commit();
+    },
+
+    getSharedTripIds: async (userId: string) => {
+        const snap = await getDocs(collection(db, 'tripAccess', userId, 'trips'));
+        return snap.docs.map((d) => d.id);
+    },
+
+    getSharedTravels: async (userId: string) => {
+        const tripIds = await travelService.getSharedTripIds(userId);
+        if (tripIds.length === 0) return [];
+
+        const results = await Promise.allSettled(
+            tripIds.map((id) => getDoc(doc(db, COL, id)))
+        );
+
+        return results
+            .filter((r): r is PromiseFulfilledResult<any> => r.status === 'fulfilled' && r.value.exists())
+            .map((r) => mapTravelDoc(r.value))
+            .sort((a, b) => {
+                const aTime = a.updatedAt instanceof Date ? a.updatedAt.getTime() : 0;
+                const bTime = b.updatedAt instanceof Date ? b.updatedAt.getTime() : 0;
+                return bTime - aTime;
+            });
+    }
 };

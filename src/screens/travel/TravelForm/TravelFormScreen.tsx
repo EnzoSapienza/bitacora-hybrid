@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { parse, isValid, startOfDay, endOfDay } from 'date-fns';
@@ -28,6 +28,8 @@ export default function TravelFormScreen() {
     const [endDateStr, setEndDateStr] = useState('');
     const [visibility, setVisibility] = useState<'PRIVATE' | 'PUBLIC' | 'FOLLOWERS'>('PRIVATE');
 
+    const isSubmittingRef = useRef(false);
+
     const baseStartDate = startDateStr ? parse(startDateStr, 'dd/MM/yyyy', new Date()) : null;
     const baseEndDate = endDateStr ? parse(endDateStr, 'dd/MM/yyyy', new Date()) : null;
 
@@ -51,7 +53,10 @@ export default function TravelFormScreen() {
     const estaCargando = storeLoading || uploading;
 
     const handleSave = async () => {
+        if (isSubmittingRef.current) return;
         if (!isFormValid || !baseStartDate || !baseEndDate) return;
+
+        isSubmittingRef.current = true;
 
         const finalStartDate = startOfDay(baseStartDate);
         const finalEndDate = endOfDay(baseEndDate);
@@ -84,6 +89,8 @@ export default function TravelFormScreen() {
             navigation.goBack();
         } catch {
             // error manejado por el store
+        } finally {
+            isSubmittingRef.current = false;
         }
     };
 

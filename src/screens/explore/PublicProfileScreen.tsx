@@ -81,5 +81,9 @@ export default function PublicProfileScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    content: { padding: 16 },
+    content: {
+        paddingHorizontal: 16,
+        paddingTop: 10,
+        paddingBottom: 0
+    },
 });

@@ -21,6 +21,7 @@ interface PointInput {
     latitude: number;
     longitude: number;
     imageUrls: string[];
+    authorizedUsers: string[];
 }
 
 interface PoiState {

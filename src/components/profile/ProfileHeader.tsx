@@ -12,7 +12,6 @@ type Props = {
     travelCount?: number;
     followersCount?: number;
     followingCount?: number;
-    onEditClick?: () => void;
     isFollowing?: boolean;
     onFollowToggle?: () => void;
 };
@@ -20,7 +19,7 @@ type Props = {
 export const ProfileHeader = ({
     displayName, username, bio, photoUrl,
     travelCount = 0, followersCount = 0, followingCount = 0,
-    onEditClick, isFollowing, onFollowToggle,
+    isFollowing, onFollowToggle,
 }: Props) => {
     const colors = useAppStore((s) => s.themescolors);
     const { t } = useTranslation();
@@ -49,12 +48,6 @@ export const ProfileHeader = ({
                         </Text>
                     ) : null}
                 </View>
-
-                {onEditClick && (
-                    <TouchableOpacity onPress={onEditClick} style={styles.editButton}>
-                        <MaterialIcons name="edit" size={22} color={colors.azulProfundo} />
-                    </TouchableOpacity>
-                )}
             </View>
 
             <View style={styles.countersRow}>
@@ -98,7 +91,6 @@ const styles = StyleSheet.create({
     avatar: { width: 72, height: 72, borderRadius: 36 },
     avatarFallback: { justifyContent: 'center', alignItems: 'center' },
     info: { flex: 1, marginLeft: 16 },
-    editButton: { padding: 8 },
     countersRow: { flexDirection: 'row', gap: 24, marginTop: 16 },
     counterItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
     counterCount: { fontWeight: '700', fontSize: 16 },

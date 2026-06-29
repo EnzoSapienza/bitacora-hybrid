@@ -1,11 +1,12 @@
 import { db } from "../firebase";
 import {
     collection, collectionGroup,
-    addDoc, getDocs, doc, getDoc, updateDoc,
+    doc, getDocs, getDoc,
     query, orderBy, where, limit as fsLimit,
     increment,
     serverTimestamp,
     GeoPoint,
+    writeBatch
 } from "firebase/firestore";
 import { parseDateTimeToDate } from "../../components/utils/date";
 
@@ -18,6 +19,7 @@ interface PointData {
     latitude: number;
     longitude: number;
     imageUrls: string[];
+    authorizedUsers: string[];
 }
 
 const RAW_FETCH_LIMIT = 200;
@@ -39,7 +41,6 @@ export const poiService = {
             }
 
             let visitDate: Date | null = null;
-
             if (data.visitDate && typeof data.visitDate.toDate === "function") {
                 visitDate = data.visitDate.toDate();
             }
@@ -89,29 +90,35 @@ export const poiService = {
     },
 
     savePoint: async (tripId: string, pointData: PointData): Promise<string> => {
+        const batch = writeBatch(db);
+
         const pointsCollectionRef = collection(db, "trips", tripId, "pointsOfInterest");
+        const pointRef = doc(pointsCollectionRef);
+
         const travelDocRef = doc(db, "trips", tripId);
 
         const parsedDate = parseDateTimeToDate(pointData.visitDate, pointData.visitTime);
         const customDate = parsedDate ?? serverTimestamp();
 
-        const docRef = await addDoc(pointsCollectionRef, {
+        batch.set(pointRef, {
             name: pointData.name,
             address: pointData.address,
             notes: pointData.notes,
             visitDate: customDate,
             location: new GeoPoint(pointData.latitude, pointData.longitude),
             geohash: "",
-            authorizedUsers: [],
+            authorizedUsers: pointData.authorizedUsers,
             imageUrls: pointData.imageUrls
         });
 
-        await updateDoc(travelDocRef, {
+        batch.update(travelDocRef, {
             pointsCount: increment(1),
             updatedAt: serverTimestamp()
         });
 
-        return docRef.id;
+        await batch.commit();
+
+        return pointRef.id;
     },
 
     getAuthorizedNearbyPoints: async (uid: string, range: [string, string]) => {
@@ -127,14 +134,11 @@ export const poiService = {
 
         return snap.docs.map((d) => {
             const data = d.data();
-
             return {
                 id: d.id,
                 tripId: d.ref.parent.parent?.id ?? null,
-
                 lat: data.location.latitude,
                 lng: data.location.longitude,
-
                 name: data.name,
                 address: data.address,
                 notes: data.notes,
@@ -145,5 +149,4 @@ export const poiService = {
             };
         });
     }
-
 };

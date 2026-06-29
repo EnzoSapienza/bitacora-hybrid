@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
     body: { flex: 1, padding: 16, paddingBottom: 0 },
     metaRow: { flexDirection: 'row', gap: 8, marginBottom: 16, flexWrap: 'wrap' },
     badge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1 },
-    creatorCard: { flexDirection: 'row', alignItems: 'center', padding: 12, borderRadius: 12, borderWidth: 1, marginBottom: 16 },
     poiSection: { flex: 1 },
     placeholderCard: { padding: 24, paddingVertical: 40, borderRadius: 12, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
 });

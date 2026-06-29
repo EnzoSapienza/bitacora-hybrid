@@ -48,7 +48,8 @@
         }
     },
     "home": {
-        "title": "Home"
+        "title": "Home",
+        "tabs": { "mine": "My Trips", "shared": "Collaborations" }
     },
     "travel": {
         "create": "Create trip",
@@ -114,6 +115,7 @@
         }
     },
     "explore": {
+        "title": "Explore",
         "searchPlaceholder": "Search trips...",
         "filters": {
             "short": "Short (1-3d)",
@@ -130,6 +132,12 @@
             "following": "From people you follow",
             "seeAll": "See all"
         },
+        "nav": {
+            "travelDetail": "Trip Detail",
+            "profile": "Traveler Profile",
+            "poi": "Point of Interest",
+            "allTravels": "Discover Trips"
+        },
         "allTravelsEmpty": "No more new trips to discover for now."
     },
     "map" : {
@@ -137,5 +145,18 @@
         "searching_address": "Searching Address...",
         "name_placeholder": "Selected location",
         "address_placeholder": "The address of the venue could not be obtained"
+    },
+    "collaborators": {
+        "title": "Collaborators",
+        "searchPlaceholder": "Search by username...",
+        "resultsHeader": "Results",
+        "currentHeader": "Current collaborators",
+        "empty": "No collaborators added yet",
+        "errors": {
+            "notFound": "Trip not found",
+            "loadFailed": "Error loading collaborators",
+            "notOwner": "Only the owner can manage collaborators",
+            "saveFailed": "Error saving collaborators"
+        }
     }
 }
