@@ -286,7 +286,7 @@ export const PoiDetailContent = ({
                         </Text>
                     </View>
 
-                    <View>
+                    <View style={{ marginTop: 12 }}>
                         <Button
                             mode="contained-tonal"
                             onPress={() => setShowComments?.(true)}
