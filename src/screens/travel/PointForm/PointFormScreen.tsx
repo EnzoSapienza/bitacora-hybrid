@@ -134,8 +134,8 @@ export default function PointFormScreen() {
             }
 
             navigation.goBack();
-        } catch (e) {
-            console.error(e);
+        } catch {
+            // Error controlado por el store
         }
     };
 
