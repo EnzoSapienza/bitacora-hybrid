@@ -32,7 +32,7 @@ export default function CommentItem({
               day: "2-digit",
               month: "short",
           })
-        : t("general.now");
+        : t("common.now");
 
     return (
         <View
@@ -122,7 +122,7 @@ export default function CommentItem({
                         },
                     ]}
                 >
-                    {comment.likesCount} Me gusta
+                    {comment.likesCount} {t("common.like")}
                 </Text>
             </View>
 

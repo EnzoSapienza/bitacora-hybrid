@@ -8,6 +8,7 @@ import { TravelStackParamList } from "@/navigation/tabs/TravelNavigator";
 import { PoiDetailContent } from "@/screens/travel/PointOfInterestScreen/PoiDetailContent";
 import { useCommentStore } from "@/hooks/firestore/useCommentStore";
 import { useAuthStore } from "@/store/authStore";
+import { useTranslation } from "react-i18next";
 
 type PoiDetailRouteProp = RouteProp<TravelStackParamList, "PoiDetail">;
 
@@ -20,6 +21,7 @@ export default function PointOfInterestScreen() {
     const point = usePoiStore((state) =>
         state.points.find((p) => p.id === pointId),
     );
+    const { t } = useTranslation();
 
     const {
         comments,
@@ -52,7 +54,7 @@ export default function PointOfInterestScreen() {
                 <Text
                     style={[Typography.bodyLarge, { color: colors.grisOscuro }]}
                 >
-                    No se encontró la información del punto de interés
+                    t("travel.poiNotFound")
                 </Text>
             </View>
         );

@@ -291,7 +291,7 @@ export const PoiDetailContent = ({
                             mode="contained-tonal"
                             onPress={() => setShowComments?.(true)}
                         >
-                            {t("point.seeComments")}
+                            {t("travel.poi_comments.seeComments")}
                         </Button>
                     </View>
                 </View>

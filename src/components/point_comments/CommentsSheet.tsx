@@ -112,15 +112,12 @@ export default function CommentsSheet({
     };
 
     const placeholderText = replyingToCommentId
-        ? t(
-              "comments.replyPlaceholder",
-              `Responder a ${replyingToUserName ?? "este comentario"}`,
-          )
-        : t("comments.writeComment", "Escribe un comentario...");
+        ? t("travel.poi_comments.replyPlaceholder")
+        : t("travel.poi_comments.writeComment");
 
     const submitLabel = replyingToCommentId
-        ? t("comments.reply", "Responder")
-        : t("comments.send", "Enviar");
+        ? t("travel.poi_comments.reply")
+        : t("travel.poi_comments.send");
 
     if (loadingComments && !submitting) {
         return (
@@ -132,7 +129,7 @@ export default function CommentsSheet({
                 ]}
             >
                 <Text style={[styles.stateText, { color: textColor }]}>
-                    {t("comments.loading", "Cargando comentarios...")}
+                    {t("travel.poi_comments.loading")}
                 </Text>
             </View>
         );
@@ -172,7 +169,7 @@ export default function CommentsSheet({
             <View style={styles.handle} />
             <View style={styles.headerRow}>
                 <Text style={[styles.title, { color: textColor }]}>
-                    {t("comments.title", "Comentarios")}
+                    {t("travel.poi_comments.title")}
                 </Text>
                 <Text style={[styles.count, { color: secondaryTextColor }]}>
                     {safeComments.length}
@@ -199,10 +196,7 @@ export default function CommentsSheet({
                                     { color: secondaryTextColor },
                                 ]}
                             >
-                                {t(
-                                    "comments.empty",
-                                    "Sé el primero en comentar",
-                                )}
+                                {t("travel.poi_comments.empty")}
                             </Text>
                         }
                         renderItem={({ item }) => (
@@ -225,7 +219,7 @@ export default function CommentsSheet({
                                     style={styles.replyAction}
                                 >
                                     <Text style={{ color: secondaryTextColor }}>
-                                        {t("comments.reply", "Responder")}
+                                        {t("travel.poi_comments.reply")}
                                     </Text>
                                 </Pressable>
 
@@ -259,7 +253,7 @@ export default function CommentsSheet({
                         {replyingToCommentId ? (
                             <View style={styles.replyingBanner}>
                                 <Text style={{ color: textColor }}>
-                                    {t("comments.replyingTo", "Respondiendo a")}{" "}
+                                    {t("travel.poi_comments.replyingTo")}{" "}
                                     {replyingToUserName}
                                 </Text>
                                 <Pressable
@@ -269,7 +263,7 @@ export default function CommentsSheet({
                                     }}
                                 >
                                     <Text style={{ color: Colors.azulClaro }}>
-                                        {t("comments.cancel", "Cancelar")}
+                                        {t("common.cancel")}
                                     </Text>
                                 </Pressable>
                             </View>

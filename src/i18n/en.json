@@ -16,7 +16,9 @@
             "oct": "OCT",
             "nov": "NOV",
             "dec": "DEC"
-        }
+        },
+        "now": "Now",
+        "like": "Like"
     },
     "profile": {
         "loading": "Loading...",
@@ -93,6 +95,7 @@
             "dateError": "The start date cannot be later than the end date.",
             "uploadError": "Could not upload the cover photo. Please try again."
         },
+        "poiNotFound": "No information was found for this point of interest",
         "poiForm": {
             "nameLabel": "Place name",
             "namePlaceholder": "E.g. Central Hotel, Resto Bar...",
@@ -112,6 +115,18 @@
             "notesPlaceholder": "What do you want to remember about this place?",
             "photosLabel": "Place Photos",
             "addPhoto": "Add"
+        },
+        "poi_comments": {
+            "title": "Comments",
+            "replyPlaceholder": "Reply this comment",
+            "commentPlaceholder": "Write a comment...",
+            "reply": "Reply",
+            "replyingTo": "Replying to",
+            "send": "Send",
+            "loading": "Loading comments...",
+            "empty": "Be the first to comment",
+            "seeComments": "Show comments"
+
         }
     },
     "explore": {

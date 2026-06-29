@@ -16,7 +16,9 @@
             "oct": "OCT",
             "nov": "NOV",
             "dec": "DIC"
-        }
+        },
+        "now": "Ahora",
+        "like": "Me gusta"
     },
     "profile": {
         "loading": "Cargando...",
@@ -93,6 +95,7 @@
             "dateError": "La fecha de inicio no puede ser posterior a la fecha de fin.",
             "uploadError": "No se pudo subir la imagen de portada. Por favor intentá de nuevo."
         },
+        "poiNotFound": "No se encontró la información del punto de interés",
         "poiForm": {
             "nameLabel": "Nombre del lugar",
             "namePlaceholder": "Ej. Hotel Central, Resto Bar...",
@@ -112,6 +115,18 @@
             "notesPlaceholder": "¿Qué quieres recordar de este lugar?",
             "photosLabel": "Fotos del Lugar",
             "addPhoto": "Añadir"
+        },
+        "poi_comments": {
+            "title": "Comentarios",
+            "replyPlaceholder": "Responder a este comentario",
+            "commentPlaceholder": "Escribe un comentario...",
+            "reply": "Responder",
+            "replyingTo": "Respondiendo a",
+            "send": "Enviar",
+            "loading": "Cargando comentarios...",
+            "empty": "Sé el primero en comentar",
+            "seeComments": "Ver comentarios"
+
         }
     },
     "explore": {

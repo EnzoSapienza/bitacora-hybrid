@@ -16,7 +16,9 @@
             "oct": "OTT",
             "nov": "NOV",
             "dec": "DIC"
-        }
+        },
+        "now": "Ora",
+        "like": "Mi piace"
     },
     "profile": {
         "loading": "Caricamento...",
@@ -93,6 +95,7 @@
             "dateError": "La data di inizio non può essere posteriore alla data di fine.",
             "uploadError": "Non è stato possibile caricare la foto di copertina. Riprova."
         },
+        "poiNotFound": "Non sono state trovate informazioni sul punto di interesse",
         "poiForm": {
             "nameLabel": "Nome del luogo",
             "namePlaceholder": "Es. Hotel Centrale, Resto Bar...",
@@ -112,6 +115,18 @@
             "notesPlaceholder": "Cosa vuoi ricordare di questo posto?",
             "photosLabel": "Foto del Luogo",
             "addPhoto": "Aggiungi"
+        },
+        "poi_comments": {
+            "title": "Commenti",
+            "replyPlaceholder": "Rispondi a questo commento",
+            "commentPlaceholder": "Scrivi un commento...",
+            "reply": "Rispondi",
+            "replyingTo": "In risposta a",
+            "send": "Invia",
+            "loading": "Caricamento dei commenti...",
+            "empty": "Sii il primo a commentare",
+            "seeComments": "Visualizza i commenti"
+
         }
     },
     "explore": {
