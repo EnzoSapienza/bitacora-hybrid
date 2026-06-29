@@ -8,11 +8,11 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Typography } from "../../constants/typography";
+import { Typography } from "@/constants/typography";
 
 interface DatePickerFieldProps {
     label: string;
-    value: string;
+    value: string; // formato "DD/MM/YYYY"
     onChangeText: (text: string) => void;
     currentColors: any;
 }
@@ -36,6 +36,21 @@ export function DatePickerField({
             if (!isNaN(date.getTime())) return date;
         }
         return new Date();
+    };
+
+    // El prop correcto es "onChange" (no "onValueChange").
+    // En Android el picker se cierra solo; event.type === "dismissed" cuando se cancela.
+    const handleChange = (event: any, selectedDate?: Date) => {
+        if (Platform.OS === "android") {
+            setShow(false);
+        }
+        if (event.type === "dismissed") return;
+        if (selectedDate) {
+            const day = String(selectedDate.getDate()).padStart(2, "0");
+            const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+            const year = selectedDate.getFullYear();
+            onChangeText(`${day}/${month}/${year}`);
+        }
     };
 
     return (
@@ -84,23 +99,29 @@ export function DatePickerField({
                     value={getInitialDate()}
                     mode="date"
                     display={Platform.OS === "ios" ? "spinner" : "default"}
-                    onValueChange={(event, date) => {
-                        setShow(false);
-                        if (date) {
-                            const day = String(date.getDate()).padStart(2, "0");
-                            const month = String(date.getMonth() + 1).padStart(
-                                2,
-                                "0",
-                            );
-                            const year = date.getFullYear();
-                            onChangeText(`${day}/${month}/${year}`);
-                        }
-                    }}
-                    onDismiss={() => setShow(false)}
+                    onChange={handleChange}
                     themeVariant={
                         currentColors.blanco === "#FFFFFF" ? "light" : "dark"
                     }
                 />
+            )}
+
+            {/* "onDismiss" no existe en la API. En iOS, como "spinner" no se */}
+            {/* autocierra, agregamos un botón explícito para cerrar el picker. */}
+            {Platform.OS === "ios" && show && (
+                <TouchableOpacity
+                    onPress={() => setShow(false)}
+                    style={styles.doneButton}
+                >
+                    <Text
+                        style={{
+                            color: currentColors.azulProfundo,
+                            fontWeight: "600",
+                        }}
+                    >
+                        Listo
+                    </Text>
+                </TouchableOpacity>
             )}
         </View>
     );
@@ -116,5 +137,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         height: 50,
+    },
+    doneButton: {
+        alignSelf: "flex-end",
+        paddingVertical: 8,
+        paddingHorizontal: 4,
     },
 });

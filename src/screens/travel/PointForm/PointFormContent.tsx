@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     View,
     Text,
@@ -6,15 +6,14 @@ import {
     StyleSheet,
     TouchableOpacity,
     ScrollView,
-    Platform,
     ActivityIndicator,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@/constants/typography";
-import { formatDate, formatTime } from "@/components/utils/date";
+import { DatePickerField } from "@/components/datetime_field/DatePickerField";
+import { TimePickerField } from "@/components/datetime_field/TimePickerField";
 
 interface PointFormContentProps {
     currentColors: any;
@@ -39,6 +38,21 @@ interface PointFormContentProps {
     onOpenMapPicker: () => void;
 }
 
+const dateToString = (date: Date): string => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+};
+
+const stringToDate = (value: string, fallback: Date): Date => {
+    const parts = value.split("/");
+    if (parts.length !== 3) return fallback;
+    const [day, month, year] = parts.map(Number);
+    const date = new Date(year, month - 1, day);
+    return isNaN(date.getTime()) ? fallback : date;
+};
+
 export function PointFormContent({
     currentColors,
     name,
@@ -62,27 +76,6 @@ export function PointFormContent({
     onOpenMapPicker,
 }: PointFormContentProps) {
     const { t } = useTranslation();
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showTimePicker, setShowTimePicker] = useState(false);
-
-    const onChangeDate = (event: any, selectedDate?: Date) => {
-        if (Platform.OS === "android") {
-            setShowDatePicker(false);
-        }
-        if (selectedDate) {
-            setVisitDate(selectedDate);
-        }
-    };
-
-    const onChangeTime = (event: any, selectedTime?: Date) => {
-        if (Platform.OS === "android") {
-            setShowTimePicker(false);
-        }
-        if (selectedTime) {
-            setVisitTime(selectedTime);
-        }
-    };
-
     const notesLength = (notes || "").length;
 
     return (
@@ -254,102 +247,21 @@ export function PointFormContent({
             )}
 
             <View style={[styles.rowGap, { marginTop: 16 }]}>
-                <View style={{ flex: 1 }}>
-                    <Text
-                        style={[
-                            Typography.labelLarge,
-                            {
-                                color: currentColors.azulOscuro,
-                                marginBottom: 8,
-                            },
-                        ]}
-                    >
-                        {t("travel.poiForm.visitDateLabel")}
-                    </Text>
-                    <TouchableOpacity
-                        style={[
-                            styles.input,
-                            styles.pickerTrigger,
-                            {
-                                backgroundColor: currentColors.blanco,
-                                borderColor: currentColors.grisClaro,
-                            },
-                        ]}
-                        onPress={() => setShowDatePicker(true)}
-                    >
-                        <Text
-                            style={{
-                                color: currentColors.grisOscuro,
-                                fontSize: 16,
-                            }}
-                        >
-                            {formatDate(visitDate)}
-                        </Text>
-                        <MaterialIcons
-                            name="calendar-today"
-                            size={18}
-                            color={currentColors.grisMedio}
-                        />
-                    </TouchableOpacity>
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={visitDate}
-                            mode="date"
-                            display="default"
-                            onValueChange={onChangeDate}
-                            onDismiss={() => setShowDatePicker(false)}
-                        />
-                    )}
-                </View>
-
-                <View style={{ flex: 1 }}>
-                    <Text
-                        style={[
-                            Typography.labelLarge,
-                            {
-                                color: currentColors.azulOscuro,
-                                marginBottom: 8,
-                            },
-                        ]}
-                    >
-                        {t("travel.poiForm.visitTimeLabel")}
-                    </Text>
-                    <TouchableOpacity
-                        style={[
-                            styles.input,
-                            styles.pickerTrigger,
-                            {
-                                backgroundColor: currentColors.blanco,
-                                borderColor: currentColors.grisClaro,
-                            },
-                        ]}
-                        onPress={() => setShowTimePicker(true)}
-                    >
-                        <Text
-                            style={{
-                                color: currentColors.grisOscuro,
-                                fontSize: 16,
-                            }}
-                        >
-                            {formatTime(visitTime)}
-                        </Text>
-                        <MaterialIcons
-                            name="access-time"
-                            size={18}
-                            color={currentColors.grisMedio}
-                        />
-                    </TouchableOpacity>
-                    {showTimePicker && (
-                        <DateTimePicker
-                            value={visitTime}
-                            mode="time"
-                            is24Hour={true}
-                            display="default"
-                            onValueChange={onChangeTime}
-                            onDismiss={() => setShowTimePicker(false)}
-                        />
-                    )}
-                </View>
+                <DatePickerField
+                    label={t("travel.poiForm.visitDateLabel")}
+                    value={dateToString(visitDate)}
+                    onChangeText={(text) =>
+                        setVisitDate(stringToDate(text, visitDate))
+                    }
+                    currentColors={currentColors}
+                />
+                <TimePickerField
+                    label={t("travel.poiForm.visitTimeLabel")}
+                    value={visitTime}
+                    onChange={setVisitTime}
+                    currentColors={currentColors}
+                    is24Hour={true}
+                />
             </View>
 
             {rangoTexto ? (
@@ -529,12 +441,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         paddingHorizontal: 12,
-    },
-    pickerTrigger: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        height: 50,
     },
     galleryContainer: { flexDirection: "row", gap: 12, paddingVertical: 4 },
     addPhotoButton: {

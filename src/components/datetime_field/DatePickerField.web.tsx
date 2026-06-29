@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Typography } from "../../constants/typography";
+import { Typography } from "@/constants/typography";
 
 interface DatePickerFieldProps {
     label: string;
-    value: string;
+    value: string; // formato "DD/MM/YYYY"
     onChangeText: (text: string) => void;
     currentColors: any;
 }
@@ -16,6 +16,7 @@ export function DatePickerField({
     onChangeText,
     currentColors,
 }: DatePickerFieldProps) {
+    // Convierte "DD/MM/YYYY" -> "YYYY-MM-DD" (formato que exige <input type="date">)
     const toInputValue = (v: string): string => {
         if (!v) return "";
         const parts = v.split("/");
@@ -24,6 +25,7 @@ export function DatePickerField({
         return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     };
 
+    // Convierte "YYYY-MM-DD" -> "DD/MM/YYYY" (formato que usa el resto de la app)
     const toDisplayValue = (isoValue: string): string => {
         if (!isoValue) return "";
         const [year, month, day] = isoValue.split("-");
@@ -34,6 +36,8 @@ export function DatePickerField({
         onChangeText(toDisplayValue(event.target.value));
     };
 
+    // Los tipos de React Native no declaran elementos JSX del DOM (como <input>),
+    // así que se crea con React.createElement para evitar errores de TypeScript.
     const dateInput = React.createElement("input", {
         type: "date",
         value: toInputValue(value),
