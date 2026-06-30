@@ -179,7 +179,11 @@ export default function useLocation() {
 
             startWatching();
         } catch (err) {
-            console.error("err:", err);
+            if (err instanceof GeolocationPositionError) {
+                console.error("Geo error:", { code: err.code, message: err.message });
+            } else {
+                console.error("Error desconocido:", err);
+            }
             if (isMountedRef.current) {
                 const message =
                     err instanceof GeolocationPositionError

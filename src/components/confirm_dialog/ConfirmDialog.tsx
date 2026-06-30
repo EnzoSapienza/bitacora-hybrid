@@ -1,4 +1,6 @@
 import { Dialog, Portal, Button, Text } from "react-native-paper";
+import { useTranslation } from "react-i18next";
+import { useAppStore } from "@/store/appStore";
 
 type Props = {
     visible: boolean;
@@ -15,6 +17,9 @@ export default function ConfirmDialog({
     onCancel,
     onConfirm,
 }: Props) {
+    const { t } = useTranslation();
+    const colors = useAppStore((s) => s.themescolors);
+
     return (
         <Portal>
             <Dialog visible={visible} onDismiss={onCancel}>
@@ -25,9 +30,9 @@ export default function ConfirmDialog({
                 </Dialog.Content>
 
                 <Dialog.Actions>
-                    <Button onPress={onCancel}>Cancelar</Button>
-                    <Button onPress={onConfirm} textColor="red">
-                        Confirmar
+                    <Button onPress={onCancel}>{t('common.cancel')}</Button>
+                    <Button onPress={onConfirm} textColor={colors.rojoPin}>
+                        {t('common.confirm')}
                     </Button>
                 </Dialog.Actions>
             </Dialog>

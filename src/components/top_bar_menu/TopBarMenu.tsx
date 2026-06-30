@@ -2,11 +2,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useState } from "react";
 import { Menu, IconButton } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
-export default function TopBarMenu() {
+type Props = {
+    onEditProfile?: () => void;
+};
+
+export default function TopBarMenu({ onEditProfile }: Props) {
     const [visible, setVisible] = useState(false);
     const { logout } = useAuth();
     const confirm = useConfirm();
+    const { t } = useTranslation();
 
     return (
         <Menu
@@ -22,23 +28,21 @@ export default function TopBarMenu() {
         >
             <Menu.Item
                 onPress={() => {
-                    console.log("Perfil");
                     setVisible(false);
+                    onEditProfile?.();
                 }}
-                title="Perfil"
+                title={t('profile.editProfile')}
             />
             <Menu.Item
                 onPress={() => {
-                    console.log("Cerrando sesión");
                     setVisible(false);
-
                     confirm({
-                        title: "Cerrar sesión",
-                        message: "¿Seguro que quieres salir?",
+                        title: t('profile.logout'),
+                        message: t('profile.confirmLogout'),
                         onConfirm: logout,
                     });
                 }}
-                title="Cerrar sesión"
+                title={t('profile.logout')}
             />
         </Menu>
     );

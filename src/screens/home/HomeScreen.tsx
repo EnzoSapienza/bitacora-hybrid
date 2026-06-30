@@ -8,11 +8,14 @@ import { useAuthStore } from "@/store/authStore";
 import { useAppStore } from "@/store/appStore";
 import AddButton from "@/components/add_button/AddButton";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ProfileDialog } from "@/components/profile/ProfileDialog";
+import TopBarMenu from "@/components/top_bar_menu/TopBarMenu";
 
 export default function HomeScreen() {
     const [tab, setTab] = useState<'mine' | 'shared'>('mine');
+    const [profileDialogVisible, setProfileDialogVisible] = useState(false);
     const navigation = useNavigation<any>();
-    const { user, loadProfile } = useAuthStore();
+    const { user, loadProfile, updateProfile } = useAuthStore();
     const colors = useAppStore((s) => s.themescolors);
     const { t } = useTranslation();
 
@@ -28,7 +31,14 @@ export default function HomeScreen() {
         }
     }, [user?.uid]);
 
-    // Filtrar la lista a mostrar segun la pestaña activa
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TopBarMenu onEditProfile={() => setProfileDialogVisible(true)} />
+            ),
+        });
+    }, [navigation]);
+
     const displayedTravels = tab === 'mine' ? travels : sharedTravels;
     const isCurrentlyLoading = loading || sharedLoading;
 
@@ -54,16 +64,16 @@ export default function HomeScreen() {
 
             {/* Selector de Pestañas */}
             <View style={[styles.tabContainer, { borderBottomColor: colors.grisClaro }]}>
-                <TouchableOpacity 
-                    onPress={() => setTab('mine')} 
+                <TouchableOpacity
+                    onPress={() => setTab('mine')}
                     style={[styles.tab, tab === 'mine' && { borderBottomWidth: 2, borderBottomColor: colors.azulProfundo }]}
                 >
                     <Text style={[styles.tabText, { color: tab === 'mine' ? colors.azulProfundo : colors.grisMedio }, tab === 'mine' && styles.activeTabText]}>
                         {t('home.tabs.mine')}
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                    onPress={() => setTab('shared')} 
+                <TouchableOpacity
+                    onPress={() => setTab('shared')}
                     style={[styles.tab, tab === 'shared' && { borderBottomWidth: 2, borderBottomColor: colors.azulProfundo }]}
                 >
                     <Text style={[styles.tabText, { color: tab === 'shared' ? colors.azulProfundo : colors.grisMedio }, tab === 'shared' && styles.activeTabText]}>
@@ -81,9 +91,19 @@ export default function HomeScreen() {
                     })
                 }
             />
+
             <AddButton
                 onPress={() => navigation.navigate("Travel", { screen: "TravelForm" })}
             />
+
+            {user && (
+                <ProfileDialog
+                    visible={profileDialogVisible}
+                    hideDialog={() => setProfileDialogVisible(false)}
+                    user={user}
+                    onSave={(updated) => updateProfile(updated)}
+                />
+            )}
         </View>
     );
 }
@@ -91,13 +111,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     center: { flex: 1, justifyContent: "center", alignItems: "center" },
-    tabContainer: { 
-        flexDirection: 'row', 
-        paddingHorizontal: 20, 
+    tabContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 20,
         marginTop: 10,
         borderBottomWidth: 1,
     },
     tab: { flex: 1, alignItems: 'center', paddingVertical: 12 },
-    tabText: { },
+    tabText: {},
     activeTabText: { fontWeight: 'bold' }
 });

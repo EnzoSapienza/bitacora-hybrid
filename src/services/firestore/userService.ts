@@ -105,4 +105,8 @@ export const userService = {
         const snap = await getDocs(q);
         return snap.empty;
     },
+    updateProfile: async (uid: string, data: { nombre?: string; username?: string; photoUrl?: string; bio?: string }) => {
+        const userRef = doc(db, "users", uid);
+        await setDoc(userRef, data, { merge: true });
+    },
 };

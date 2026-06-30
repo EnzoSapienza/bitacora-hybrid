@@ -3,6 +3,7 @@
         "save": "Save",
         "cancel": "Cancel",
         "details": "Details",
+        "confirm": "Confirm",
         "months": {
             "jan": "JAN",
             "feb": "FEB",
@@ -27,7 +28,16 @@
         "followers": "Followers",
         "following": "Following",
         "follow": "Follow",
-        "adventures": "Adventures"
+        "adventures": "Adventures",
+        "title": "Profile",
+        "editProfile": "Edit Profile",
+        "logout": "Log Out",
+        "name": "Name",
+        "username": "Username",
+        "bio": "Biography",
+        "usernameInvalid": "Only lowercase letters, numbers, and underscores. Minimum 3 characters.",
+        "usernameTaken": "That username is already taken.",
+        "confirmLogout": "Are you sure you want to log out?"
     },
     "imagePicker": {
         "permissions": {
@@ -81,6 +91,7 @@
         "poiEmptyPlaceholder": "Points of interest will be listed in this section",
         "notFound": "The selected trip was not found.",
         "form": {
+            "title": "Trip Form",
             "changePhoto": "Change Photo",
             "addCoverPhoto": "Add cover photo",
             "nameLabel": "Trip Name",
@@ -100,6 +111,7 @@
         },
         "poiNotFound": "No information was found for this point of interest",
         "poiForm": {
+            "title": "Point of Interest Form",
             "nameLabel": "Place name",
             "namePlaceholder": "E.g. Central Hotel, Resto Bar...",
             "addressLabel": "Address",
