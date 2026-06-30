@@ -10,6 +10,7 @@ import { useCommentStore } from "@/hooks/firestore/useCommentStore";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "react-i18next";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { IconButton } from "react-native-paper";
 
 type PoiDetailRouteProp = RouteProp<TravelStackParamList, "PoiDetail">;
 type PointNavProv = NativeStackNavigationProp<TravelStackParamList>;
@@ -47,6 +48,23 @@ export default function PointOfInterestScreen() {
     useEffect(() => {
         if (point?.name) navigation.setOptions({ title: point.name });
     }, [point?.name]);
+
+    useEffect(() => {
+        if (point)
+            navigation.setOptions({
+                headerRight: () => (
+                    <IconButton
+                        icon="pen"
+                        onPress={() =>
+                            navigation.navigate("PointEdit", {
+                                travelId,
+                                pointId,
+                            })
+                        }
+                    />
+                ),
+            });
+    }, []);
 
     useEffect(() => {
         if (travelId && pointId) fetchComments(travelId, pointId);
@@ -124,7 +142,6 @@ export default function PointOfInterestScreen() {
             }}
             showComments={showComments}
             setShowComments={setShowComments}
-            onEdit={() => navigation.navigate("PointEdit", { travelId, point })}
         />
     );
 }

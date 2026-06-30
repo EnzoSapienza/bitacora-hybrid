@@ -121,6 +121,32 @@ export const poiService = {
         return pointRef.id;
     },
 
+    updatePoint: async (tripId: string, pointId: string, pointData: PointData): Promise<void> => {
+        const batch = writeBatch(db);
+
+        const pointRef = doc(db, "trips", tripId, "pointsOfInterest", pointId);
+        const travelDocRef = doc(db, "trips", tripId);
+
+        const parsedDate = parseDateTimeToDate(pointData.visitDate, pointData.visitTime);
+        const customDate = parsedDate ?? serverTimestamp();
+
+        batch.update(pointRef, {
+            name: pointData.name,
+            address: pointData.address,
+            notes: pointData.notes,
+            visitDate: customDate,
+            location: new GeoPoint(pointData.latitude, pointData.longitude),
+            authorizedUsers: pointData.authorizedUsers,
+            imageUrls: pointData.imageUrls
+        });
+
+        batch.update(travelDocRef, {
+            updatedAt: serverTimestamp()
+        });
+
+        await batch.commit();
+    },
+
     getAuthorizedNearbyPoints: async (uid: string, range: [string, string]) => {
         const snap = await getDocs(
             query(

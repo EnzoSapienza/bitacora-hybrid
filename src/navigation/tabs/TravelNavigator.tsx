@@ -16,7 +16,7 @@ export type TravelStackParamList = {
     TravelForm: undefined;
     PoiDetail: { pointId: string; travelId: string };
     PointForm: { travelId: string };
-    PointEdit: { travelId: string; point: PointOfInterest };
+    PointEdit: { travelId: string; pointId: string };
     ManageCollaborators: { tripId: string };
     PublicProfile: { userId: string };
     PublicTravelDetail: { travelId: string };

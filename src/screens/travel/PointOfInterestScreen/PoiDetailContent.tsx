@@ -39,7 +39,6 @@ interface PoiDetailContentProps {
     comments?: CommentsProps;
     showComments?: boolean;
     setShowComments?: (showComments: boolean) => void;
-    onEdit: () => void;
 }
 
 export const PoiDetailContent = ({

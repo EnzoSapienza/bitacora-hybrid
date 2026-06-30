@@ -34,11 +34,20 @@ type PointFormRouteProp = RouteProp<TravelStackParamList, "PointEdit">;
 export default function PointEditScreen() {
     const navigation = useNavigation();
     const route = useRoute<PointFormRouteProp>();
-    const { travelId, point } = route.params;
+    const { travelId, pointId } = route.params as {
+        travelId: string;
+        pointId: string;
+    };
 
     const colors = useAppStore((s) => s.themescolors);
     const { t } = useTranslation();
-    const { addPoint, loading: storeLoading, error } = usePoiStore();
+    const {
+        updatePoint,
+        fetchPointById,
+        currentPoint: point,
+        loading: storeLoading,
+        error,
+    } = usePoiStore();
     const { location, errorMsg, loading: locationLoading } = useLocation();
     const { uploadImage, uploading: uploadingImages } = useCloudinaryUpload();
     const { user } = useAuthStore();
@@ -65,6 +74,10 @@ export default function PointEditScreen() {
         }
     }, [travelId, travel, getTravelById]);
 
+    useEffect(() => {
+        fetchPointById(travelId, pointId);
+    }, [travelId, pointId, fetchPointById]);
+
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");
     const [visitDate, setVisitDate] = useState(new Date());
@@ -76,6 +89,27 @@ export default function PointEditScreen() {
     const [address, setAddress] = useState("");
     const [mapPickerVisible, setMapPickerVisible] = useState(false);
 
+    // Fotos que ya estaban subidas a Cloudinary cuando se entró a editar.
+    // Las nuevas fotos que el usuario agrega se manejan aparte (useImagePicker)
+    // y recién se suben al guardar.
+    const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
+
+    // Una vez que llega el punto desde Firestore, precargamos el formulario.
+    useEffect(() => {
+        if (!point) return;
+        setName(point.name ?? "");
+        setNotes(point.notes ?? "");
+        setVisitDate(point.visitDate ?? new Date());
+        setVisitTime(point.visitDate ?? new Date());
+        setAddress(point.address ?? "");
+        setCapturedCoords(
+            point.latitude !== undefined && point.longitude !== undefined
+                ? { lat: point.latitude, lng: point.longitude }
+                : null,
+        );
+        setExistingImageUrls(point.imageUrls ?? []);
+    }, [point]);
+
     const {
         selectedImages,
         handlePickImages,
@@ -83,6 +117,18 @@ export default function PointEditScreen() {
         dialog,
         hideDialog,
     } = useImagePicker();
+
+    // Lo que se muestra en el formulario es la unión de fotos ya guardadas
+    // (remotas) + fotos nuevas elegidas en esta sesión (locales, sin subir aún).
+    const allImages = [...existingImageUrls, ...selectedImages];
+
+    const handleRemoveAnyPhoto = (uri: string) => {
+        if (existingImageUrls.includes(uri)) {
+            setExistingImageUrls((prev) => prev.filter((u) => u !== uri));
+        } else {
+            handleRemovePhoto(uri);
+        }
+    };
 
     const inicioViaje =
         travel?.startDate instanceof Date ? travel.startDate : null;
@@ -116,22 +162,26 @@ export default function PointEditScreen() {
     }
 
     const handleSave = async () => {
-        if (!isFormValid || !capturedCoords || isFechaInvalida) return;
+        if (!isFormValid || !capturedCoords || isFechaInvalida || !point)
+            return;
 
         try {
+            // Solo subimos las fotos nuevas (locales); las que ya eran
+            // remotas se mantienen tal cual en existingImageUrls.
             const remoteUrls = await Promise.all(
                 selectedImages.map((uri) => uploadImage(uri)),
             );
             const validRemoteUrls = remoteUrls.filter(
                 (url): url is string => url !== null,
             );
+            const finalImageUrls = [...existingImageUrls, ...validRemoteUrls];
 
             const authorizedUsers = [
                 travel?.ownerId,
                 ...(travel?.privileges ?? []),
             ].filter((uid): uid is string => !!uid);
 
-            const poiId = await addPoint(travelId, {
+            await updatePoint(travelId, pointId, {
                 name: name.trim(),
                 address: address.trim(),
                 notes: notes.trim(),
@@ -139,7 +189,7 @@ export default function PointEditScreen() {
                 visitTime: formatTime(visitTime),
                 latitude: capturedCoords.lat,
                 longitude: capturedCoords.lng,
-                imageUrls: validRemoteUrls,
+                imageUrls: finalImageUrls,
                 authorizedUsers,
             });
 
@@ -152,26 +202,34 @@ export default function PointEditScreen() {
                 0,
             );
 
+            // Reprograma los avisos con la fecha/nombre actualizados.
+            // Nota: esto agenda nuevas notificaciones pero no cancela las
+            // que ya estaban programadas para este punto antes de editarlo;
+            // si tu hook de notificaciones expone una función de cancelación,
+            // conviene llamarla acá antes de reprogramar para evitar avisos duplicados.
             const idVisita = await programarAvisoPOI(
                 name.trim(),
                 fechaVisitaCompleta,
                 travelId,
-                poiId,
+                pointId,
             );
             const idFotos = await programarRecordatorioFotos(
                 name.trim(),
                 fechaVisitaCompleta,
                 travelId,
-                poiId,
+                pointId,
             );
 
             if (idVisita)
                 await guardarIdNotificacion(
-                    NotiKeys.poiVisita(poiId),
+                    NotiKeys.poiVisita(pointId),
                     idVisita,
                 );
             if (idFotos)
-                await guardarIdNotificacion(NotiKeys.poiFotos(poiId), idFotos);
+                await guardarIdNotificacion(
+                    NotiKeys.poiFotos(pointId),
+                    idFotos,
+                );
 
             if (user?.uid) {
                 const isShared = sharedTravels.some((t) => t.id === travelId);
@@ -225,7 +283,21 @@ export default function PointEditScreen() {
         visitTime,
         capturedCoords,
         selectedImages,
+        existingImageUrls,
     ]);
+
+    if (!point) {
+        return (
+            <View
+                style={[
+                    styles.loaderContainer,
+                    { backgroundColor: colors.grisFondoApp },
+                ]}
+            >
+                <ActivityIndicator size="large" color={colors.azulProfundo} />
+            </View>
+        );
+    }
 
     return (
         <>
@@ -250,9 +322,9 @@ export default function PointEditScreen() {
                     setVisitTime={setVisitTime}
                     capturedCoords={capturedCoords}
                     handleCaptureLocation={handleCaptureLocation}
-                    selectedImages={selectedImages}
+                    selectedImages={allImages}
                     handlePickImages={handlePickImages}
-                    handleRemovePhoto={handleRemovePhoto}
+                    handleRemovePhoto={handleRemoveAnyPhoto}
                     resolvingAddress={locationLoading}
                     isFechaInvalida={isFechaInvalida}
                     rangoTexto={rangoTexto}
@@ -346,6 +418,7 @@ export default function PointEditScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
+    loaderContainer: { flex: 1, alignItems: "center", justifyContent: "center" },
     content: { padding: 20, paddingBottom: 40 },
     closeMapButton: {
         position: "absolute",
