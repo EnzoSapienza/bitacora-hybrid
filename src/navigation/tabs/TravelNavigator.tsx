@@ -8,12 +8,15 @@ import PublicProfileScreen from "@/screens/explore/PublicProfileScreen";
 import PublicTravelDetailScreen from "@/screens/explore/PublicTravelDetailScreen";
 import PublicPointDetailScreen from "@/screens/explore/PublicPointDetailScreen";
 import { useTranslation } from "react-i18next";
+import PointEditScreen from "@/screens/travel/PointForm/PointEditScreen";
+import PointOfInterest from "@/types/models/pointOfInterest";
 
 export type TravelStackParamList = {
     TravelDetails: { travelId: string };
     TravelForm: undefined;
     PoiDetail: { pointId: string; travelId: string };
     PointForm: { travelId: string };
+    PointEdit: { travelId: string; point: PointOfInterest };
     ManageCollaborators: { tripId: string };
     PublicProfile: { userId: string };
     PublicTravelDetail: { travelId: string };
@@ -30,6 +33,7 @@ export default function TravelNavigator() {
             <Stack.Screen name="TravelForm" component={TravelFormScreen} />
             <Stack.Screen name="PointForm" component={PointFormScreen} />
             <Stack.Screen name="PoiDetail" component={PointOfInterestScreen} />
+            <Stack.Screen name="PointEdit" component={PointEditScreen} />
             <Stack.Screen
                 name="ManageCollaborators"
                 component={ManageCollaboratorsScreen}

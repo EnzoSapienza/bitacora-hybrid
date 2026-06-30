@@ -9,12 +9,14 @@ import { PoiDetailContent } from "@/screens/travel/PointOfInterestScreen/PoiDeta
 import { useCommentStore } from "@/hooks/firestore/useCommentStore";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "react-i18next";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type PoiDetailRouteProp = RouteProp<TravelStackParamList, "PoiDetail">;
+type PointNavProv = NativeStackNavigationProp<TravelStackParamList>;
 
 export default function PointOfInterestScreen() {
     const route = useRoute<PoiDetailRouteProp>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<PointNavProv>();
     const { travelId, pointId } = route.params;
     const colors = useAppStore((s) => s.themescolors);
     const { user } = useAuthStore();
@@ -52,7 +54,12 @@ export default function PointOfInterestScreen() {
 
     if (loading) {
         return (
-            <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
+            <View
+                style={[
+                    styles.center,
+                    { backgroundColor: colors.grisFondoApp },
+                ]}
+            >
                 <ActivityIndicator size="large" color={colors.azulProfundo} />
             </View>
         );
@@ -60,8 +67,15 @@ export default function PointOfInterestScreen() {
 
     if (!point) {
         return (
-            <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
-                <Text style={[Typography.bodyLarge, { color: colors.grisOscuro }]}>
+            <View
+                style={[
+                    styles.center,
+                    { backgroundColor: colors.grisFondoApp },
+                ]}
+            >
+                <Text
+                    style={[Typography.bodyLarge, { color: colors.grisOscuro }]}
+                >
                     {t("travel.poiNotFound")}
                 </Text>
             </View>
@@ -110,6 +124,7 @@ export default function PointOfInterestScreen() {
             }}
             showComments={showComments}
             setShowComments={setShowComments}
+            onEdit={() => navigation.navigate("PointEdit", { travelId, point })}
         />
     );
 }

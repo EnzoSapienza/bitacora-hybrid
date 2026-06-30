@@ -29,12 +29,12 @@ import MapMarker from "@/types/models/MapMarker";
 import MapOSM from "@/components/map/Map";
 import { Modal, Portal, Dialog, Button } from "react-native-paper";
 
-type PointFormRouteProp = RouteProp<TravelStackParamList, "PointForm">;
+type PointFormRouteProp = RouteProp<TravelStackParamList, "PointEdit">;
 
-export default function PointFormScreen() {
+export default function PointEditScreen() {
     const navigation = useNavigation();
     const route = useRoute<PointFormRouteProp>();
-    const { travelId } = route.params;
+    const { travelId, point } = route.params;
 
     const colors = useAppStore((s) => s.themescolors);
     const { t } = useTranslation();
