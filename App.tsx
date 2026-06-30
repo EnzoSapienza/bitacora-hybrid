@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
+import * as ImagePicker from "expo-image-picker";
 import { authService } from "./src/services/authService";
 import { useAuthStore } from "./src/store/authStore";
 import RootNavigator from "./src/navigation/RootNavigator";
