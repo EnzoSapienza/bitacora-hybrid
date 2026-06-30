@@ -18,7 +18,7 @@ interface TravelState {
     sharedError: string | null;
     fetchTravels: (uid: string) => Promise<void>;
     fetchSharedTravels: (uid: string) => Promise<void>;
-    addTravel: (travelData: any) => Promise<void>;
+    addTravel: (travelData: any) => Promise<string>;
     updateTravelPrivileges: (tripId: string, privileges: string[]) => void;
     getTravelById: (id: string) => Promise<Travel | null>;
 }
@@ -82,8 +82,9 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     addTravel: async (travelData) => {
         set({ loading: true, error: null });
         try {
-            await travelService.create(travelData);
+            const docRef = await travelService.create(travelData);
             await get().fetchTravels(travelData.ownerId);
+            return docRef.id;
         } catch (err: any) {
             set({ error: err.message || 'Error al crear el viaje', loading: false });
             throw err;

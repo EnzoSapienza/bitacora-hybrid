@@ -129,7 +129,6 @@
             "loading": "Loading comments...",
             "empty": "Be the first to comment",
             "seeComments": "Show comments"
-
         }
     },
     "explore": {
@@ -158,7 +157,7 @@
         },
         "allTravelsEmpty": "No more new trips to discover for now."
     },
-    "map" : {
+    "map": {
         "title": "Map",
         "searching_address": "Searching Address...",
         "name_placeholder": "Selected location",
@@ -227,5 +226,17 @@
             "googlePlayServices": "Google Play Services is not available.",
             "googleDefault": "Error signing in with Google."
         }
+    },
+    "notifications": {
+        "disabled_title": "Notifications disabled",
+        "disabled_message": "You won't receive reminders for your trip because notifications are disabled. You can enable them in your system settings.",
+        "start_travel_title": "Your trip starts tomorrow!",
+        "start_travel_body": "Your trip {{nombreViaje}} starts tomorrow. Is everything ready?",
+        "prep_title": "Time to pack!",
+        "prep_body": "Your trip {{nombreViaje}} starts in 3 days. Have you packed everything?",
+        "poi_title": "It's time to visit your destination!",
+        "poi_body": "Today you planned to visit {{nombrePunto}}. Enjoy your visit!",
+        "photos_title": "Did you take any photos?",
+        "photos_body": "How was {{nombrePunto}}? Save your memories in Bitácora."
     }
 }

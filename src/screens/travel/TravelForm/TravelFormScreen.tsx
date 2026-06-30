@@ -12,6 +12,8 @@ import { useCloudinaryUpload } from '../../../hooks/useCloudinaryUpload';
 import { useImagePicker } from '../../../hooks/useImagePicker';
 import { Typography } from '../../../constants/typography';
 import { calcDurationDays } from '@/components/utils/date';
+import { useNotifications } from '@/hooks/useNotifications';
+import { guardarIdNotificacion, NotiKeys } from '@/hooks/useLocalStorage';
 import { TravelFormContent } from './TravelFormContent';
 
 export default function TravelFormScreen() {
@@ -22,6 +24,7 @@ export default function TravelFormScreen() {
     const { addTravel, loading: storeLoading, error } = useTravelStore();
     const { uploadImage, uploading } = useCloudinaryUpload();
     const { singleImage, handlePickImages, dialog, hideDialog } = useImagePicker(false);
+    const { programarAvisoInicioViaje, programarAvisoPreparacion } = useNotifications();
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -73,7 +76,7 @@ export default function TravelFormScreen() {
                 }
             }
 
-            await addTravel({
+            const travelId = await addTravel({
                 name: name.trim(),
                 description: description.trim(),
                 ownerId: user!.uid,
@@ -86,6 +89,12 @@ export default function TravelFormScreen() {
                 privileges: [],
                 updatedAt: new Date(),
             });
+
+            const idInicio = await programarAvisoInicioViaje(name.trim(), finalStartDate, travelId);
+            const idPrep = await programarAvisoPreparacion(name.trim(), finalStartDate, travelId);
+
+            if (idInicio) await guardarIdNotificacion(NotiKeys.travelInicio(travelId), idInicio);
+            if (idPrep) await guardarIdNotificacion(NotiKeys.travelPrep(travelId), idPrep);
 
             navigation.goBack();
         } catch {
