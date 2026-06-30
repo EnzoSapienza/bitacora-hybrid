@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import MapOSM from "@/components/map/Map";
-import useLocation from "@/hooks/useLocation";
+import useLocation from "@/hooks/location/useLocation";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AppStackParamList } from "@/navigation/AppNavigator";

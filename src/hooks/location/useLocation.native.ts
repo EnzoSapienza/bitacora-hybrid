@@ -83,12 +83,22 @@ export default function useLocation() {
 
             const current = await Location.getCurrentPositionAsync({});
             const { latitude, longitude } = current.coords;
-            const addressObj = await getAddressFromCoords(latitude, longitude);
+
+            if (!isMountedRef.current) return;
+
+            // El geocoding se aísla: si falla, igual queremos disponer de las coordenadas.
+            let address = `${latitude}, ${longitude}`;
+            try {
+                const addressObj = await getAddressFromCoords(latitude, longitude);
+                address = addressToString(addressObj, latitude, longitude);
+            } catch (geocodeErr) {
+                // Seguimos con el fallback de coords crudas.
+            }
 
             if (!isMountedRef.current) return;
 
             lastGeocodedRef.current = { latitude, longitude };
-            setLocation({ latitude, longitude, address: addressToString(addressObj, latitude, longitude) });
+            setLocation({ latitude, longitude, address });
             setLoading(false);
 
             subscriptionRef.current = await startWatching();
