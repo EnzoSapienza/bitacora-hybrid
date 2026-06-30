@@ -2,14 +2,18 @@ import {
     NavigationContainer,
     DefaultTheme,
     DarkTheme,
+    createNavigationContainerRef,
 } from "@react-navigation/native";
 import { useMemo } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useAppStore } from "../store/appStore";
 import { Themes } from "../constants/themes";
+import { linking } from "./linking";
 import AppNavigator from "./AppNavigator";
 import AuthNavigator from "./AuthNavigator";
 import UsernameScreen from "../screens/auth/UsernameScreen";
+
+export const navigationRef = createNavigationContainerRef();
 
 export default function RootNavigator() {
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -42,7 +46,7 @@ export default function RootNavigator() {
     }
 
     return (
-        <NavigationContainer theme={navTheme}>
+        <NavigationContainer ref={navigationRef} theme={navTheme} linking={linking}>
             {content}
         </NavigationContainer>
     );

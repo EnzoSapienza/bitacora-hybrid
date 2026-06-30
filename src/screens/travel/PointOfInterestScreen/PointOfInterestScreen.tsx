@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { usePoiStore } from "@/hooks/firestore/usePoiStore";
 import { useAppStore } from "@/store/appStore";
@@ -18,9 +18,10 @@ export default function PointOfInterestScreen() {
     const { travelId, pointId } = route.params;
     const colors = useAppStore((s) => s.themescolors);
     const { user } = useAuthStore();
-    const point = usePoiStore((state) =>
-        state.points.find((p) => p.id === pointId),
-    );
+
+    const { points, loading, fetchPoints } = usePoiStore();
+    const point = points.find((p) => p.id === pointId);
+
     const { t } = useTranslation();
 
     const {
@@ -36,6 +37,12 @@ export default function PointOfInterestScreen() {
     const [showComments, setShowComments] = useState(false);
 
     useEffect(() => {
+        if (travelId && points.length === 0) {
+            fetchPoints(travelId);
+        }
+    }, [travelId]);
+
+    useEffect(() => {
         if (point?.name) navigation.setOptions({ title: point.name });
     }, [point?.name]);
 
@@ -43,18 +50,19 @@ export default function PointOfInterestScreen() {
         if (travelId && pointId) fetchComments(travelId, pointId);
     }, [travelId, pointId]);
 
+    if (loading) {
+        return (
+            <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
+                <ActivityIndicator size="large" color={colors.azulProfundo} />
+            </View>
+        );
+    }
+
     if (!point) {
         return (
-            <View
-                style={[
-                    styles.center,
-                    { backgroundColor: colors.grisFondoApp },
-                ]}
-            >
-                <Text
-                    style={[Typography.bodyLarge, { color: colors.grisOscuro }]}
-                >
-                    t("travel.poiNotFound")
+            <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
+                <Text style={[Typography.bodyLarge, { color: colors.grisOscuro }]}>
+                    {t("travel.poiNotFound")}
                 </Text>
             </View>
         );
@@ -77,14 +85,12 @@ export default function PointOfInterestScreen() {
                     if (!travelId || !pointId || !user?.uid) {
                         return;
                     }
-
                     await addComment(travelId, pointId, user.uid, content);
                 },
                 onAddReply: async (content, commentId) => {
                     if (!travelId || !pointId || !user?.uid) {
                         return;
                     }
-
                     await addReply(
                         travelId,
                         pointId,

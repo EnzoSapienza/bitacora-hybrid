@@ -29,7 +29,7 @@ interface PoiState {
     loading: boolean;
     error: string | null;
     fetchPoints: (tripId: string) => Promise<void>;
-    addPoint: (tripId: string, pointData: PointInput) => Promise<void>;
+    addPoint: (tripId: string, pointData: PointInput) => Promise<string>;
 }
 
 export const usePoiStore = create<PoiState>((set, get) => ({
@@ -50,8 +50,9 @@ export const usePoiStore = create<PoiState>((set, get) => ({
     addPoint: async (tripId, pointData) => {
         set({ loading: true, error: null });
         try {
-            await poiService.savePoint(tripId, pointData);
+            const newId = await poiService.savePoint(tripId, pointData);
             await get().fetchPoints(tripId);
+            return newId;
         } catch (err: any) {
             set({ error: err.message || "Error al guardar el punto", loading: false });
             throw err;

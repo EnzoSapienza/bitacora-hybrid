@@ -21,6 +21,8 @@ import { Typography } from "@/constants/typography";
 import { TravelStackParamList } from "@/navigation/tabs/TravelNavigator";
 import { formatDate, formatTime } from "@/components/utils/date";
 import { useImagePicker } from "@/hooks/useImagePicker";
+import { useNotifications } from "@/hooks/useNotifications";
+import { guardarIdNotificacion, NotiKeys } from "@/hooks/useLocalStorage";
 
 import { PointFormContent } from "./PointFormContent";
 import MapMarker from "@/types/models/MapMarker";
@@ -41,6 +43,7 @@ export default function PointFormScreen() {
     //console.log({ location, errorMsg, locationLoading });
     const { uploadImage, uploading: uploadingImages } = useCloudinaryUpload();
     const { user } = useAuthStore();
+    const { programarAvisoPOI, programarRecordatorioFotos } = useNotifications();
 
     const {
         travels,
@@ -128,7 +131,7 @@ export default function PointFormScreen() {
                 ...(travel?.privileges ?? []),
             ].filter((uid): uid is string => !!uid);
 
-            await addPoint(travelId, {
+            const poiId = await addPoint(travelId, {
                 name: name.trim(),
                 address: address.trim(),
                 notes: notes.trim(),
@@ -139,6 +142,16 @@ export default function PointFormScreen() {
                 imageUrls: validRemoteUrls,
                 authorizedUsers,
             });
+
+            // fecha+hora exacta de visita para las notificaciones
+            const fechaVisitaCompleta = new Date(visitDate);
+            fechaVisitaCompleta.setHours(visitTime.getHours(), visitTime.getMinutes(), 0, 0);
+
+            const idVisita = await programarAvisoPOI(name.trim(), fechaVisitaCompleta, travelId, poiId);
+            const idFotos = await programarRecordatorioFotos(name.trim(), fechaVisitaCompleta, travelId, poiId);
+
+            if (idVisita) await guardarIdNotificacion(NotiKeys.poiVisita(poiId), idVisita);
+            if (idFotos) await guardarIdNotificacion(NotiKeys.poiFotos(poiId), idFotos);
 
             if (user?.uid) {
                 const isShared = sharedTravels.some((t) => t.id === travelId);
