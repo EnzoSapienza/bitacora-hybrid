@@ -27,8 +27,16 @@ export default function TravelNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="TravelDetails" component={TravelDetailScreen} />
-            <Stack.Screen name="TravelForm" component={TravelFormScreen} />
-            <Stack.Screen name="PointForm" component={PointFormScreen} />
+            <Stack.Screen
+                name="TravelForm"
+                component={TravelFormScreen}
+                options={{ title: t("travel.form.title") }}
+            />
+            <Stack.Screen
+                name="PointForm"
+                component={PointFormScreen}
+                options={{ title: t("travel.poiForm.title") }}
+            />
             <Stack.Screen name="PoiDetail" component={PointOfInterestScreen} />
             <Stack.Screen
                 name="ManageCollaborators"

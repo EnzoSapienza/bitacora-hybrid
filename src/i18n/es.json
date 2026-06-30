@@ -3,6 +3,7 @@
         "save": "Guardar",
         "cancel": "Cancelar",
         "details": "Detalles",
+        "confirm": "Confirmar",
         "months": {
             "jan": "ENE",
             "feb": "FEB",
@@ -27,7 +28,16 @@
         "followers": "Seguidores",
         "following": "Siguiendo",
         "follow": "Seguir",
-        "adventures": "Aventuras"
+        "adventures": "Aventuras",
+        "title": "Perfil",
+        "editProfile": "Editar perfil",
+        "logout": "Cerrar sesión",
+        "name": "Nombre",
+        "username": "Usuario",
+        "bio": "Biografía",
+        "usernameInvalid": "Solo letras minúsculas, números y _. Mínimo 3 caracteres.",
+        "usernameTaken": "Ese nombre de usuario ya está en uso.",
+        "confirmLogout": "¿Seguro que quieres salir?"
     },
     "imagePicker": {
         "permissions": {
@@ -81,6 +91,7 @@
         "poiEmptyPlaceholder": "Los puntos de interés se listarán en esta sección",
         "notFound": "No se encontró el viaje seleccionado.",
         "form": {
+            "title": "Formulario de Viaje",
             "changePhoto": "Cambiar Foto",
             "addCoverPhoto": "Agregar foto de portada",
             "nameLabel": "Nombre del Viaje",
@@ -100,6 +111,7 @@
         },
         "poiNotFound": "No se encontró la información del punto de interés",
         "poiForm": {
+            "title": "Formulario de Punto",
             "nameLabel": "Nombre del lugar",
             "namePlaceholder": "Ej. Hotel Central, Resto Bar...",
             "addressLabel": "Dirección",

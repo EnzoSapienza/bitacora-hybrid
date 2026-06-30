@@ -8,6 +8,7 @@ import RootNavigator from "./src/navigation/RootNavigator";
 import { PaperProvider, MD3DarkTheme, MD3LightTheme } from "react-native-paper";
 import { ConfirmProvider } from "@/context/confirm/ConfirmProvider";
 import { useAppStore } from "./src/store/appStore";
+import { Themes } from "./src/constants/themes";
 import "./src/i18n";
 import * as Linking from "expo-linking";
 import { navigationRef } from "./src/navigation/RootNavigator";
@@ -22,17 +23,35 @@ Notifications.setNotificationHandler({
     }),
 });
 
+const buildPaperTheme = (base: typeof MD3LightTheme, colors: typeof Themes.light) => ({
+    ...base,
+    colors: {
+        ...base.colors,
+        primary: colors.azulProfundo,
+        onPrimary: colors.blanco,
+        secondary: colors.azulMedio,
+        background: colors.grisFondoApp,
+        surface: colors.blanco,
+        onSurface: colors.grisOscuro,
+        outline: colors.grisClaro,
+        error: colors.rojoPin,
+    },
+});
+
 function AppContent() {
     const resolvedTheme = useAppStore((s) => s.resolvedTheme);
-    const paperTheme = resolvedTheme === "dark" ? MD3DarkTheme : MD3LightTheme;
+    const themeColors = useAppStore((s) => s.themescolors);
+    const baseTheme = resolvedTheme === "dark" ? MD3DarkTheme : MD3LightTheme;
+    const paperTheme = buildPaperTheme(baseTheme, themeColors);
+
     useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
         const data = response.notification.request.content.data;
         if (data && typeof data === 'object' && 'url' in data) {
             const url = (data as any).url;
-            if (typeof url === 'string') { 
-                const route = url.replace("bitacorahybrid://", ""); 
-                if (navigationRef.isReady()) {  
+            if (typeof url === 'string') {
+                const route = url.replace("bitacorahybrid://", "");
+                if (navigationRef.isReady()) {
                     Linking.openURL(url);
                 }
             }

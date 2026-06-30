@@ -28,6 +28,7 @@ interface AuthState {
     setLoading: (loading: boolean) => void;
     setNeedsUsername: (needs: boolean) => void;
     loadProfile: (uid: string) => Promise<void>;
+    updateProfile: (data: { nombre: string; username: string; photoUrl: string; bio: string }) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -63,7 +64,11 @@ export const useAuthStore = create<AuthState>()(
                 } catch (e) {
                     console.error('Error cargando perfil:', e);
                 }
-            }
+            },
+
+            updateProfile: (data) => set((state) => ({
+                user: state.user ? { ...state.user, ...data } : state.user,
+            })),
         }),
         {
             name: 'auth-storage',
