@@ -25,6 +25,7 @@ import { Button } from "react-native-paper";
 import CommentsSheet, {
     CommentsProps,
 } from "@/components/point_comments/CommentsSheet";
+import StoriesViewer from "@/components/travel/poi_carousel/StoriesViewer";
 
 const { width } = Dimensions.get("window");
 
@@ -56,6 +57,7 @@ export const PoiDetailContent = ({
     const colors = useAppStore((s) => s.themescolors);
     const { i18n, t } = useTranslation();
     const [activeIndex, setActiveIndex] = useState(0);
+    const [storyVisible, setStoryVisible] = useState(false);
     const tieneFotos = imageUrls.length > 0;
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -91,15 +93,21 @@ export const PoiDetailContent = ({
                                 keyExtractor={(_, index) => index.toString()}
                                 onScroll={handleScroll}
                                 scrollEventThrottle={16}
-                                renderItem={({ item }) => (
-                                    <View style={styles.carouselImageContainer}>
+                                renderItem={({ item, index }) => (
+                                    <Pressable
+                                        style={styles.carouselImageContainer}
+                                        onPress={() => {
+                                            setActiveIndex(index);
+                                            setStoryVisible(true);
+                                        }}
+                                    >
                                         <Image
                                             source={{ uri: item }}
                                             style={styles.mainImage}
                                             contentFit="cover"
                                             transition={150}
                                         />
-                                    </View>
+                                    </Pressable>
                                 )}
                             />
                             {imageUrls.length > 1 && (
@@ -111,19 +119,19 @@ export const PoiDetailContent = ({
                                                 styles.indicator,
                                                 index === activeIndex
                                                     ? [
-                                                          styles.indicatorActive,
-                                                          {
-                                                              backgroundColor:
-                                                                  colors.blanco,
-                                                          },
-                                                      ]
+                                                        styles.indicatorActive,
+                                                        {
+                                                            backgroundColor:
+                                                                colors.blanco,
+                                                        },
+                                                    ]
                                                     : [
-                                                          styles.indicatorInactive,
-                                                          {
-                                                              backgroundColor:
-                                                                  "rgba(255, 255, 255, 0.4)",
-                                                          },
-                                                      ],
+                                                        styles.indicatorInactive,
+                                                        {
+                                                            backgroundColor:
+                                                                "rgba(255, 255, 255, 0.4)",
+                                                        },
+                                                    ],
                                             ]}
                                         />
                                     ))}
@@ -315,6 +323,13 @@ export const PoiDetailContent = ({
                     />
                 </>
             )}
+
+            <StoriesViewer
+                visible={storyVisible}
+                images={imageUrls}
+                initialIndex={activeIndex}
+                onClose={() => setStoryVisible(false)}
+            />
         </>
     );
 };

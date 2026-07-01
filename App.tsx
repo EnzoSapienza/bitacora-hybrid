@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
 import * as ImagePicker from "expo-image-picker";
@@ -90,8 +91,10 @@ export default function App() {
     if (loading) return null;
 
     return (
-        <SafeAreaProvider>
-            <AppContent />
-        </SafeAreaProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+                <AppContent />
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
     );
 }
