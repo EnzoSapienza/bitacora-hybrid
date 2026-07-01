@@ -36,7 +36,10 @@ export default function PointOfInterestScreen() {
         addReply,
         likeComment,
         unlikeComment,
+        deleteComment,
+        deleteReply,
     } = useCommentStore();
+    
     const [showComments, setShowComments] = useState(false);
 
     useEffect(() => {
@@ -72,12 +75,7 @@ export default function PointOfInterestScreen() {
 
     if (loading) {
         return (
-            <View
-                style={[
-                    styles.center,
-                    { backgroundColor: colors.grisFondoApp },
-                ]}
-            >
+            <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
                 <ActivityIndicator size="large" color={colors.azulProfundo} />
             </View>
         );
@@ -85,15 +83,8 @@ export default function PointOfInterestScreen() {
 
     if (!point) {
         return (
-            <View
-                style={[
-                    styles.center,
-                    { backgroundColor: colors.grisFondoApp },
-                ]}
-            >
-                <Text
-                    style={[Typography.bodyLarge, { color: colors.grisOscuro }]}
-                >
+            <View style={[styles.center, { backgroundColor: colors.grisFondoApp }]}>
+                <Text style={[Typography.bodyLarge, { color: colors.grisOscuro }]}>
                     {t("travel.poiNotFound")}
                 </Text>
             </View>
@@ -114,22 +105,12 @@ export default function PointOfInterestScreen() {
                 loadingComments,
                 errorComments,
                 onAddComment: async (content) => {
-                    if (!travelId || !pointId || !user?.uid) {
-                        return;
-                    }
+                    if (!travelId || !pointId || !user?.uid) return;
                     await addComment(travelId, pointId, user.uid, content);
                 },
                 onAddReply: async (content, commentId) => {
-                    if (!travelId || !pointId || !user?.uid) {
-                        return;
-                    }
-                    await addReply(
-                        travelId,
-                        pointId,
-                        user.uid,
-                        commentId,
-                        content,
-                    );
+                    if (!travelId || !pointId || !user?.uid) return;
+                    await addReply(travelId, pointId, user.uid, commentId, content);
                 },
                 onLike: async (commentId: string) => {
                     if (!travelId || !pointId || !user?.uid) return;
@@ -138,6 +119,17 @@ export default function PointOfInterestScreen() {
                 onUnlike: async (commentId: string) => {
                     if (!travelId || !pointId || !user?.uid) return;
                     await unlikeComment(travelId, pointId, commentId);
+                },
+                onDeleteComment: async (messageId: string, parentId?: string) => {
+                    if (!travelId || !pointId) return;
+                    
+                    if (parentId) {
+                        // Borrado de respuesta
+                        await deleteReply(travelId, pointId, parentId, messageId);
+                    } else {
+                        // Borrado de comentario raíz
+                        await deleteComment(travelId, pointId, messageId);
+                    }
                 },
             }}
             showComments={showComments}

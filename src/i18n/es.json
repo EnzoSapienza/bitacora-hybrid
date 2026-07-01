@@ -4,6 +4,7 @@
         "cancel": "Cancelar",
         "details": "Detalles",
         "confirm": "Confirmar",
+        "delete": "Eliminar",
         "months": {
             "jan": "ENE",
             "feb": "FEB",
@@ -140,7 +141,9 @@
             "send": "Enviar",
             "loading": "Cargando comentarios...",
             "empty": "Sé el primero en comentar",
-            "seeComments": "Ver comentarios"
+            "seeComments": "Ver comentarios",
+            "deleteConfirmTitle": "Eliminar comentario",
+            "deleteConfirmMessage": "¿Estás seguro de que querés eliminar este comentario? Esta acción no se puede deshacer."
         }
     },
     "explore": {

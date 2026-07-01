@@ -2,6 +2,7 @@ import PointComment from "@/components/point_comments/CommentItem";
 import { Colors } from "@/constants/colors";
 import Comment from "@/types/models/comment";
 import { useAppStore } from "@/store/appStore";
+import { useAuthStore } from "@/store/authStore";
 import React, { useEffect, useState } from "react";
 import {
     FlatList,
@@ -27,6 +28,7 @@ export interface CommentsProps {
     onAddReply?: (content: string, commentId: string) => Promise<void> | void;
     onLike?: (commentId: string) => Promise<void> | void;
     onUnlike?: (commentId: string) => Promise<void> | void;
+    onDeleteComment?: (commentId: string, parentCommentId?: string) => Promise<void> | void;
     style?: StyleProp<ViewStyle>;
 }
 
@@ -38,9 +40,12 @@ export default function CommentsSheet({
     onAddReply,
     onLike,
     onUnlike,
+    onDeleteComment,
     style,
 }: CommentsProps) {
+    const currentColors = useAppStore((s) => s.themescolors);
     const resolvedTheme = useAppStore((state) => state.resolvedTheme);
+    const currentUserId = useAuthStore((state) => state.user?.uid);
     const safeComments = comments ?? [];
     const [draft, setDraft] = useState("");
     const [replyingToCommentId, setReplyingToCommentId] = useState<
@@ -75,13 +80,11 @@ export default function CommentsSheet({
         };
     }, []);
 
-    const containerBackground =
-        resolvedTheme === "dark"
-            ? Colors.negroAzulado
-            : Colors.grisOscuroAzulado;
-    const textColor = Colors.blanco;
-    const secondaryTextColor =
-        resolvedTheme === "dark" ? Colors.grisClaro : Colors.grisMedio;
+    const containerBackground = currentColors?.blanco ?? Colors.blanco;
+    const textColor = currentColors?.grisOscuroAzulado ?? Colors.grisOscuroAzulado;
+    const secondaryTextColor = currentColors?.grisMedio ?? Colors.grisMedio;
+    const borderColor = currentColors?.grisClaro ?? Colors.grisClaro;
+    const handleColor = currentColors?.grisClaro ?? Colors.grisClaro;
 
     const { t } = useTranslation();
 
@@ -166,7 +169,7 @@ export default function CommentsSheet({
                 },
             ]}
         >
-            <View style={styles.handle} />
+            <View style={[styles.handle, { backgroundColor: handleColor }]} />
             <View style={styles.headerRow}>
                 <Text style={[styles.title, { color: textColor }]}>
                     {t("travel.poi_comments.title")}
@@ -208,6 +211,21 @@ export default function CommentsSheet({
                                     onLike={() => onLike?.(item.id)}
                                     onUnlike={() => onUnlike?.(item.id)}
                                     isLiked={!!item.likedByCurrentUser}
+                                    isOwner={
+                                        !!currentUserId &&
+                                        item.userId === currentUserId
+                                    }
+                                    onDelete={() => {
+                                        console.log("[CommentsSheet] onDelete root, onDeleteComment is:", typeof onDeleteComment, "id:", item.id);
+                                        Promise.resolve(
+                                            onDeleteComment?.(item.id),
+                                        ).catch((err) =>
+                                            console.error(
+                                                "Error al eliminar comentario:",
+                                                err,
+                                            ),
+                                        );
+                                    }}
                                 />
 
                                 <Pressable
@@ -241,6 +259,24 @@ export default function CommentsSheet({
                                                 isLiked={
                                                     !!reply.likedByCurrentUser
                                                 }
+                                                isOwner={
+                                                    !!currentUserId &&
+                                                    reply.userId ===
+                                                        currentUserId
+                                                }
+                                                onDelete={() => {
+                                                    Promise.resolve(
+                                                        onDeleteComment?.(
+                                                            reply.id,
+                                                            item.id,
+                                                        ),
+                                                    ).catch((err) =>
+                                                        console.error(
+                                                            "Error al eliminar respuesta:",
+                                                            err,
+                                                        ),
+                                                    );
+                                                }}
                                             />
                                         ))}
                                     </View>
@@ -330,7 +366,6 @@ const styles = StyleSheet.create({
         width: 44,
         height: 5,
         borderRadius: 999,
-        backgroundColor: "rgba(255,255,255,0.3)",
         alignSelf: "center",
         marginBottom: 12,
     },

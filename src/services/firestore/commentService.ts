@@ -7,7 +7,8 @@ import {
     query,
     orderBy,
     serverTimestamp,
-    getDoc
+    getDoc,
+    writeBatch
 } from 'firebase/firestore';
 import { setDoc, updateDoc, deleteDoc, increment } from 'firebase/firestore';
 import { useAuthStore } from '@/store/authStore';
@@ -103,7 +104,7 @@ export const commentService = {
                     likesCount: commentData.likesCount ?? 0,
                     likedByCurrentUser: currentUserId ? (await getDoc(doc(commentDoc.ref, "likes", currentUserId))).exists() : false,
                     timestamp: commentData.timestamp?.toDate() ?? new Date(),
-                    replies,
+                    replies: replies || [],
                 };
             })
         );
@@ -124,5 +125,31 @@ export const commentService = {
 
         const commentRef = doc(db, "trips", tripId, "pointsOfInterest", pointId, "comments", commentId);
         await updateDoc(commentRef, { likesCount: increment(-1) });
+    },
+    deleteComment: async (tripId: string, pointId: string, commentId: string) => {
+        const commentRef = doc(db, "trips", tripId, "pointsOfInterest", pointId, "comments", commentId);
+        const repliesRef = collection(commentRef, "replies");
+        const repliesSnap = await getDocs(repliesRef);
+
+        const batch = writeBatch(db);
+        const commentLikesSnap = await getDocs(collection(commentRef, "likes"));
+        commentLikesSnap.docs.forEach((doc) => batch.delete(doc.ref));
+        for (const replyDoc of repliesSnap.docs) {
+            const replyLikesSnap = await getDocs(collection(replyDoc.ref, "likes"));
+            replyLikesSnap.docs.forEach((likeDoc) => batch.delete(likeDoc.ref));
+            batch.delete(replyDoc.ref);
+        }
+        batch.delete(commentRef);
+        await batch.commit();
+    },
+    deleteReply: async (tripId: string, pointId: string, commentId: string, replyId: string) => {
+        const replyRef = doc(db, "trips", tripId, "pointsOfInterest", pointId, "comments", commentId, "replies", replyId);
+
+        const batch = writeBatch(db);
+        const replyLikesSnap = await getDocs(collection(replyRef, "likes"));
+        replyLikesSnap.docs.forEach((doc) => batch.delete(doc.ref));
+
+        batch.delete(replyRef);
+        await batch.commit();
     }
 }

@@ -319,6 +319,7 @@ export const PoiDetailContent = ({
                         onAddReply={comments?.onAddReply}
                         onLike={comments?.onLike}
                         onUnlike={comments?.onUnlike}
+                        onDeleteComment={comments?.onDeleteComment}
                         style={styles.commentsSheet}
                     />
                 </>

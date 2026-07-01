@@ -12,6 +12,8 @@ interface CommentState {
     addReply: (tripId: string, pointId: string, userId: string, commentId: string, content: string) => Promise<void>;
     likeComment: (tripId: string, pointId: string, commentId: string) => Promise<void>;
     unlikeComment: (tripId: string, pointId: string, commentId: string) => Promise<void>;
+    deleteComment: (tripId: string, pointId: string, commentId: string) => Promise<void>;
+    deleteReply: (tripId: string, pointId: string, commentId: string, replyId: string) => Promise<void>;
 }
 
 export const useCommentStore = create<CommentState>((set, get) => ({
@@ -120,6 +122,58 @@ export const useCommentStore = create<CommentState>((set, get) => ({
         } catch (err: any) {
             // rollback
             set({ comments: previousComments, errorComments: err.message || "Error al quitar like" });
+            throw err;
+        }
+    },
+    deleteComment: async (tripId: string, pointId: string, commentId: string) => {
+    const previousComments = get().comments;
+    
+    // Eliminación recursiva del comentario padre y sus hijos
+    const removeRecursive = (comments: Comment[]): Comment[] => {
+        return comments
+            .filter((c) => c.id !== commentId)
+            .map((c) => ({
+                ...c,
+                replies: c.replies ? removeRecursive(c.replies) : []
+            }));
+    };
+
+    set({ comments: removeRecursive(previousComments) });
+
+    try {
+        await commentService.deleteComment(tripId, pointId, commentId);
+    } catch (err) {
+        set({ comments: previousComments });
+        throw err;
+    }
+},
+
+    deleteReply: async (tripId: string, pointId: string, commentId: string, replyId: string) => {
+        const previousComments = get().comments;
+        
+        //borrar una respuesta
+        const removeReply = (comments: Comment[]): Comment[] => {
+            return comments.map((c) => {
+                if (c.id === commentId) {
+                    return { 
+                        ...c, 
+                        replies: c.replies.filter(r => r.id !== replyId) 
+                    };
+                }
+                // Seguimos buscando en caso de que la estructura sea anidada
+                return { 
+                    ...c, 
+                    replies: c.replies ? removeReply(c.replies) : [] 
+                };
+            });
+        };
+
+        set({ comments: removeReply(previousComments) });
+
+        try {
+            await commentService.deleteReply(tripId, pointId, commentId, replyId);
+        } catch (err) {
+            set({ comments: previousComments });
             throw err;
         }
     }

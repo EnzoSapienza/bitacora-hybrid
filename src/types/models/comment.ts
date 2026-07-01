@@ -7,5 +7,5 @@ export default interface Comment {
     likesCount: number;
     likedByCurrentUser?: boolean;
     timestamp: Date;
-    replies?: Comment[];
+    replies: Comment[];
 }
