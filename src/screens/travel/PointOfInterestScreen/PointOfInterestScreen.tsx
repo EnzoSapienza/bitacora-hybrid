@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    ActivityIndicator,
+    TouchableOpacity,
+} from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { usePoiStore } from "@/hooks/firestore/usePoiStore";
 import { useAppStore } from "@/store/appStore";
@@ -11,6 +17,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "react-i18next";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { IconButton } from "react-native-paper";
+import { MaterialIcons } from "@expo/vector-icons";
 
 type PoiDetailRouteProp = RouteProp<TravelStackParamList, "PoiDetail">;
 type PointNavProv = NativeStackNavigationProp<TravelStackParamList>;
@@ -56,15 +63,21 @@ export default function PointOfInterestScreen() {
         if (point)
             navigation.setOptions({
                 headerRight: () => (
-                    <IconButton
-                        icon="pen"
+                    <TouchableOpacity
+                        style={{ marginRight: 10 }}
                         onPress={() =>
                             navigation.navigate("PointEdit", {
                                 travelId,
                                 pointId,
                             })
                         }
-                    />
+                    >
+                        <MaterialIcons
+                            name="edit"
+                            size={24}
+                            color={colors.grisOscuro}
+                        />
+                    </TouchableOpacity>
                 ),
             });
     }, []);
